@@ -12,12 +12,16 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final List<String> opcoes = ['Produtos', 'Fornecedores', 'Configurações'];
-  List<Suppliers> selecionadas = []; 
+  final List<String> options = ['Produtos', 'Fornecedores', 'Configurações'];
+  //List<Suppliers> selecionadas = [];
 
-  selectSuppliersPage(Suppliers suppliers){
-    Navigator.push(context, MaterialPageRoute(builder: (_) => SuppliersScreen(suppliers: suppliers)),);
+  selectSuppliersPage(Suppliers suppliers) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SuppliersScreen()),
+    );
   }
+
   @override
   Widget build(BuildContext context) {
     //final table = SuppliersRepository.table;
@@ -28,11 +32,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
         title: Text('Gestão de Estoque'),
       ),
       body: ListView.separated(
-        itemCount: opcoes.length,
-        itemBuilder: (context, index) => ListTile(title: Text(opcoes[index])),
+        itemCount: options.length,
+        itemBuilder: (context, index) => ListTile(
+          title: Text(options[index]),
+          onTap: () {
+            if (options[index] == 'Fornecedores') {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SuppliersScreen()),
+              );
+            }
+          },
+        ),
         separatorBuilder: (context, index) => const Divider(),
       ),
-      
     );
   }
 }
