@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/repositories/suppliers_repository.dart';
-import 'package:gestao_estoque/views/suppliers_register.dart';
+import 'package:gestao_estoque/views/suppliers_register_screen.dart';
+import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class SuppliersScreen extends StatefulWidget {
-  SuppliersScreen({Key? key}) : super(key: key);
+  final SuppliersViewmodel suppliersViewmodel;
+
+  const SuppliersScreen({super.key, required this.suppliersViewmodel});
 
   @override
   State<SuppliersScreen> createState() => _SuppliersScreenState();
@@ -22,11 +26,12 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         ),
         centerTitle: true,
         backgroundColor: Color(0xFF4D9C89),
+        iconTheme: IconThemeData(color: Colors.white),
       );
     } else {
       return AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
             setState(() {
               selected = [];
@@ -45,14 +50,28 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey[50],
         elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Colors.white),
+      );
+    }
+  }
+
+  clearSelected() {
+    setState(() {
+      selected = [];
+    });
+  }
+
+  void onSave() {
+    if (widget.suppliersViewmodel.feedback.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(widget.suppliersViewmodel.feedback)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final table = SuppliersRepository.table;
+    final table = context.watch<SuppliersViewmodel>().suppliers;
     return Scaffold(
       appBar: appBarDinamica(),
       body: ListView.separated(
@@ -62,6 +81,28 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
               table[id].nome,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
             ),
+            subtitle: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.phone, size: 16),
+                    SizedBox(width: 5),
+                    Text(table[id].telefone),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Icon(Icons.email, size: 16),
+                    SizedBox(width: 5),
+                    Text(table[id].email),
+                  ],
+                ),
+              ],
+            ),
+            leading: (selected.contains(table[id]))
+                ? CircleAvatar(child: Icon(Icons.check))
+                : SizedBox(child: Icon(Icons.people), width: 10),
             selected: selected.contains(table[id]),
             selectedTileColor:
                 Colors.indigo[50], //mudar para cor verde do código do figma
@@ -72,6 +113,22 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                     : selected.add(table[id]);
               });
             },
+            trailing: PopupMenuButton(
+              icon: Icon(Icons.more_vert),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                  child: ListTile(
+                    title: Text('Remover'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.read<SuppliersViewmodel>().removeSupplier(
+                        table[id],
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         },
         separatorBuilder: (_, ___) => Divider(),
@@ -81,7 +138,10 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => SuppliersRegister()),
+            MaterialPageRoute(
+              builder: (_) =>
+                  SuppliersRegister(suppliersViewmodel: context.read()),
+            ),
           );
         },
         child: Icon(Icons.add_business_outlined),

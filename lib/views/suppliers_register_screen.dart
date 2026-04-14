@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
 
 class SuppliersRegister extends StatefulWidget {
-  const SuppliersRegister({super.key});
+  final SuppliersViewmodel suppliersViewmodel;
+  const SuppliersRegister({super.key, required this.suppliersViewmodel});
 
   @override
   State<SuppliersRegister> createState() => _SuppliersRegisterState();
@@ -9,15 +11,47 @@ class SuppliersRegister extends StatefulWidget {
 
 class _SuppliersRegisterState extends State<SuppliersRegister> {
   final formkey = GlobalKey<FormState>();
+  final nameController = TextEditingController();
+  final phoneController = TextEditingController();
+  final emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    super.dispose();
+  }
 
   void save() {
-    if (formkey.currentState!.validate()) {}
+    if (formkey.currentState!.validate()) {
+      widget.suppliersViewmodel.saveSuppliers(
+        nameController.text,
+        phoneController.text,
+        emailController.text,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Fornecedor salvo com sucesso!', selectionColor:Colors.red,),
+          
+        ),
+      );
+      Navigator.pop(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: Text('Adicionar Fornecedor', style: TextStyle(fontSize: 19, color: Colors.white),), backgroundColor: Color(0xFF4D9C89),),
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          'Adicionar Fornecedor',
+          style: TextStyle(fontSize: 19, color: Colors.white),
+        ),
+        backgroundColor: Color(0xFF4D9C89),
+        iconTheme: IconThemeData(color: Colors.white),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Form(
@@ -25,6 +59,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
           child: ListView(
             children: [
               TextFormField(
+                controller: nameController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.add_business),
                   border: OutlineInputBorder(),
@@ -41,8 +76,9 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
               ),
               Padding(padding: const EdgeInsets.only(top: 10.0)),
               TextFormField(
+                controller: phoneController,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.add_business),
+                  prefixIcon: Icon(Icons.phone),
                   border: OutlineInputBorder(),
                   filled: true,
                   labelText: 'Telefone',
@@ -57,8 +93,9 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
               ),
               Padding(padding: const EdgeInsets.only(top: 10.0)),
               TextFormField(
+                controller: emailController,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.add_business),
+                  prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
                   filled: true,
                   labelText: 'E-mail',

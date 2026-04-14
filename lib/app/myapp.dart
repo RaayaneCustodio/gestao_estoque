@@ -1,19 +1,36 @@
 import 'package:flutter/material.dart';
-import 'package:gestao_estoque/views/dashboard_screen.dart';
+import 'package:gestao_estoque/app/routes.dart';
+import 'package:gestao_estoque/repositories/suppliers_repository.dart';
+import 'package:provider/provider.dart';
+import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
 
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SuppliersRepository suppliersRepository;
+  const MyApp({super.key, required this.suppliersRepository});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Gestão de Estoque',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF4D9C89)),
+    return MultiProvider(
+      providers: [
+        Provider.value(value: suppliersRepository),
+        ChangeNotifierProvider<SuppliersViewmodel>(
+          create: (context) =>
+              SuppliersViewmodel(suppliersRepository: context.read()),
+        ),
+      ],
+      child: Builder(
+        builder: (context) {
+          return MaterialApp.router(
+            title: 'Gestão de Estoque',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF4D9C89)),
+            ),
+            routerConfig: routes,
+          );
+        },
       ),
-      home: DashboardScreen(),
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
-import 'package:gestao_estoque/repositories/suppliers_repository.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gestao_estoque/app/routes.dart';
 
 import 'suppliers_screen.dart';
 
@@ -15,11 +16,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final List<String> options = ['Produtos', 'Fornecedores', 'Configurações'];
   //List<Suppliers> selecionadas = [];
 
-  selectSuppliersPage(Suppliers suppliers) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => SuppliersScreen()),
-    );
+  selectSuppliersPage() {
+    context.push(Routes.suppliers);
   }
 
   @override
@@ -37,10 +35,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           title: Text(options[index]),
           onTap: () {
             if (options[index] == 'Fornecedores') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => SuppliersScreen()),
-              );
+              selectSuppliersPage();
             }
           },
         ),
