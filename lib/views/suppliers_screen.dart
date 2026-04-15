@@ -16,7 +16,7 @@ class SuppliersScreen extends StatefulWidget {
 
 class _SuppliersScreenState extends State<SuppliersScreen> {
   List<Suppliers> selected = [];
-
+  
   appBarDinamica() {
     if (selected.isEmpty) {
       return AppBar(
@@ -31,7 +31,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
     } else {
       return AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
           onPressed: () {
             setState(() {
               selected = [];
@@ -48,7 +48,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                 style: TextStyle(fontSize: 17),
               ),
         centerTitle: true,
-        backgroundColor: Colors.blueGrey[50],
+        backgroundColor: Colors.blueGrey[100],
         elevation: 1,
         iconTheme: IconThemeData(color: Colors.black),
         actions: [
@@ -129,7 +129,7 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                 : SizedBox(child: Icon(Icons.people), width: 10),
             selected: selected.contains(table[id]),
             selectedTileColor:
-                Colors.indigo[50], //mudar para cor verde do código do figma
+                Colors.blueGrey[50], //mudar para cor verde do código do figma
             onLongPress: () {
               setState(() {
                 (selected.contains(table[id]))

@@ -1,0 +1,70 @@
+import 'package:flutter/material.dart';
+import 'package:gestao_estoque/views/dashboard_screen.dart';
+import 'package:gestao_estoque/views/settings_screen.dart';
+import 'package:gestao_estoque/views/suppliers_screen.dart';
+import 'package:provider/provider.dart';
+
+class HomePageScreen extends StatefulWidget {
+  const HomePageScreen({super.key});
+
+  @override
+  State<HomePageScreen> createState() => _HomePageScreenState();
+}
+
+class _HomePageScreenState extends State<HomePageScreen> {
+  int currentPage = 0;
+  late PageController pc;
+
+  @override
+  void initState() {
+    super.initState();
+    pc = PageController(initialPage: currentPage);
+  }
+
+  setCurrentPage(pagina) {
+    setState(() {
+      currentPage = pagina;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: PageView(
+        controller: pc,
+        children: [
+          DashboardScreen(),
+          DashboardScreen(),
+          SuppliersScreen(suppliersViewmodel: (context).read()),
+          SettingsScreen(),
+        ],
+        onPageChanged: setCurrentPage,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentPage,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Início'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.inventory),
+            label: 'Produtos',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Fornecedores',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configurações',
+          ),
+        ],
+        onTap: (pagina) {
+          pc.animateToPage(
+            pagina,
+            duration: Duration(milliseconds: 400),
+            curve: Curves.ease,
+          );
+        },
+      ),
+    );
+  }
+}

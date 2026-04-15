@@ -74,6 +74,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
               Padding(padding: const EdgeInsets.only(top: 10.0)),
               TextFormField(
                 controller: phoneController,
+                keyboardType: TextInputType.phone,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.phone),
                   border: OutlineInputBorder(),
@@ -91,6 +92,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
               Padding(padding: const EdgeInsets.only(top: 10.0)),
               TextFormField(
                 controller: emailController,
+                keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
                   border: OutlineInputBorder(),
@@ -99,9 +101,18 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
                   contentPadding: EdgeInsets.all(10),
                 ),
                 validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'O campo nome é obrigatório';
+                  if (value == null || value.isEmpty) {
+                    return 'O e-mail é obrigatório';
                   }
+
+                  final emailRegex = RegExp(
+                    r'^[\w\.-]+@[\w\.-]+\.\w+$',
+                  );
+
+                  if (!emailRegex.hasMatch(value)) {
+                    return 'Digite um e-mail válido';
+                  }
+
                   return null;
                 },
               ),

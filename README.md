@@ -1,17 +1,47 @@
-# gestao_estoque
+# 📦 Gestão de Estoque
 
-A new Flutter project.
+Projeto desenvolvido por **Brenda Amanda da Silva Garcez** e **Rayane Custódio**
 
-## Getting Started
+## 📌 Sobre o projeto
+Sistema desenvolvido em Flutter para gerenciamento de estoque, permitindo o controle de fornecedores e produtos.
 
-This project is a starting point for a Flutter application.
+## 🚀 Funcionalidades
+- Cadastro de fornecedores
+- Listagem de fornecedores
+- Organização de dados de estoque
+- Interface simples e intuitiva
 
-A few resources to get you started if this is your first Flutter project:
+## 🛠️ Tecnologias utilizadas
+- Flutter
+- Dart
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## ▶️ Como executar o projeto
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone o repositório:
+```bash
+git clone <https://github.com/RaayaneCustodio/gestao_estoque.git>
+
+2. Acesse a pasta do projeto:
+```bash
+cd gestao_estoque
+
+3. Instale as dependências:
+```bash
+flutter pub get
+
+4. Execute o projeto:
+```bash
+flutter run
+
+## 📂 Estrutura do projeto
+lib/
+ ├── app/
+ ├── controllers/
+ ├── models/
+ ├── repositories/
+ ├── views/
+ ├── widgets/
+ └── main.dart
+
+##📄 Licença
+Este projeto é apenas para fins acadêmicos.
