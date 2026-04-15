@@ -50,7 +50,17 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         centerTitle: true,
         backgroundColor: Colors.blueGrey[50],
         elevation: 1,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(icon: Icon(Icons.delete, color: Colors.blueGrey), onPressed: (){
+            for(final supplier in selected){
+              context.read<SuppliersViewmodel>().removeSupplier(supplier);
+            }
+            setState(() {
+              selected = [];
+            });
+          },)
+        ],
       );
     }
   }
@@ -80,22 +90,36 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
             title: Text(
               table[id].nome,
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             subtitle: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Icon(Icons.phone, size: 16),
                     SizedBox(width: 5),
-                    Text(table[id].telefone),
+                    Expanded(
+                      child: Text(
+                        table[id].telefone,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
                 Row(
                   children: [
                     Icon(Icons.email, size: 16),
                     SizedBox(width: 5),
-                    Text(table[id].email),
+                    Expanded(
+                      child: Text(
+                        table[id].email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
                   ],
                 ),
               ],

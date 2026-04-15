@@ -31,10 +31,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
         emailController.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Fornecedor salvo com sucesso!', selectionColor:Colors.red,),
-          
-        ),
+        const SnackBar(content: Text('Fornecedor salvo com sucesso!')),
       );
       Navigator.pop(context);
     }
