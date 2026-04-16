@@ -6,10 +6,14 @@ Projeto desenvolvido por **Brenda Amanda da Silva Garcez** e **Rayane Custódio*
 Sistema desenvolvido em Flutter para gerenciamento de estoque, permitindo o controle de fornecedores e produtos.
 
 ## 🚀 Funcionalidades
+- Dashboard Dinamica com contador
+- Cadastro de Produtos
+- Listagem de Produtos
 - Cadastro de fornecedores
 - Listagem de fornecedores
 - Organização de dados de estoque
 - Interface simples e intuitiva
+- COnfigurações de tema Dark e Light 
 
 ## 🛠️ Tecnologias utilizadas
 - Flutter
@@ -45,3 +49,7 @@ lib/
 
 ##📄 Licença
 Este projeto é apenas para fins acadêmicos.
+
+## Ideia
+Construido o figma do zero
+https://www.figma.com/design/eofQpAuNBrxFQRv6X09cq7/AppFluter?node-id=0-1&t=MXRztmJbW1p7ovUi-1
