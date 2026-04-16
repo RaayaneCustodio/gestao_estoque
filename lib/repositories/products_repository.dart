@@ -25,7 +25,7 @@ class ProductsRepository {
       id: getNextId(),
       nomeProduto: name,
       quantidade: quantity,
-      preco: price.toInt(),
+      preco: price,
     );
 
     _productsList.add(newProduct);
@@ -48,7 +48,7 @@ class ProductsRepository {
     if (index != -1) {
       _productsList[index].nomeProduto = newName;
       _productsList[index].quantidade = newQuantity;
-      _productsList[index].preco = newPrice.toInt();
+      _productsList[index].preco = newPrice;
     }
   }
 }

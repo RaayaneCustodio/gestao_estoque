@@ -2,7 +2,7 @@ class Product {
   int id;
   String nomeProduto;
   int quantidade;
-  int preco;
+  double preco;
 
   Product({
   required this.id,

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gestao_estoque/views/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 
+
 class Routes {
   static const homePageScreen = '/home-page-screen';
   static const dashboard = '/dashboard';
