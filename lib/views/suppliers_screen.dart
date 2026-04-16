@@ -138,88 +138,98 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
 
     return Scaffold(
       appBar: appBarDinamica(),
-      body: ListView.separated(
-        itemBuilder: (BuildContext context, int id) {
-          return Card(
-            elevation: 4,
-            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: Colors.green, width: 1),
-            ),
-            child: ListTile(
-              title: Text(
-                filteredList[id].nome,
-                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+      body: filteredList.isEmpty
+          ? const Center(
+              child: ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text('Nenhum item na lista ainda'),
               ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.phone, size: 16),
-                      SizedBox(width: 5),
-                      Expanded(
-                        child: Text(
-                          filteredList[id].telefone,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
+            )
+          : ListView.separated(
+              itemBuilder: (BuildContext context, int id) {
+                return Card(
+                  elevation: 4,
+                  margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: BorderSide(color: Colors.green, width: 1),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.email, size: 16),
-                      SizedBox(width: 5),
-                      Expanded(
-                        child: Text(
-                          filteredList[id].email,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                  child: ListTile(
+                    title: Text(
+                      filteredList[id].nome,
+                      style: TextStyle(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
-                ],
-              ),
-              leading: (selected.contains(table[id]))
-                  ? CircleAvatar(child: Icon(Icons.check))
-                  : SizedBox(child: Icon(Icons.people), width: 10),
-              selected: selected.contains(filteredList[id]),
-              selectedTileColor:
-                  Colors.blueGrey[50], //mudar para cor verde do código do figma
-              onLongPress: () {
-                setState(() {
-                  (selected.contains(filteredList[id]))
-                      ? selected.remove(filteredList[id])
-                      : selected.add(filteredList[id]);
-                });
-              },
-              trailing: PopupMenuButton(
-                icon: Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    child: ListTile(
-                      title: Text('Remover'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        context.read<SuppliersViewmodel>().removeSupplier(
-                          filteredList[id],
-                        );
-                      },
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(Icons.phone, size: 16),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                filteredList[id].telefone,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Icon(Icons.email, size: 16),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                filteredList[id].email,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    leading: (selected.contains(table[id]))
+                        ? CircleAvatar(child: Icon(Icons.check))
+                        : SizedBox(child: Icon(Icons.people), width: 10),
+                    selected: selected.contains(filteredList[id]),
+                    selectedTileColor: Colors
+                        .blueGrey[50], //mudar para cor verde do código do figma
+                    onLongPress: () {
+                      setState(() {
+                        (selected.contains(filteredList[id]))
+                            ? selected.remove(filteredList[id])
+                            : selected.add(filteredList[id]);
+                      });
+                    },
+                    trailing: PopupMenuButton(
+                      icon: Icon(Icons.more_vert),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: ListTile(
+                            title: Text('Remover'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.read<SuppliersViewmodel>().removeSupplier(
+                                filteredList[id],
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                );
+              },
+              separatorBuilder: (_, _) => Divider(),
+              itemCount: filteredList.length,
             ),
-          );
-        },
-        separatorBuilder: (_, _) => Divider(),
-        itemCount: filteredList.length,
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
