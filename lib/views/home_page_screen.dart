@@ -43,6 +43,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentPage,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white60,
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Início'),
           BottomNavigationBarItem(
@@ -65,6 +68,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
             curve: Curves.ease,
           );
         },
+        backgroundColor: Color.alphaBlend(
+          const Color(0xFF4D9C89),
+          Colors.white,
+        ),
       ),
     );
   }
