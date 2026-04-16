@@ -13,17 +13,20 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    // 1. Detectar se o tema atual é dark ou light
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     final products = context.watch<ProductsViewModel>().products;
     final int totalQuantidadeProdutos = products.fold(0, (sum, item) => sum + item.quantidade);
     final int totalFornecedores = context.watch<SuppliersViewmodel>().suppliers.length;
 
     return Scaffold(
-      // AJUSTE: Forçando o fundo da tela para branco puro
-      backgroundColor: Colors.white, 
+      // 2. Usar cores dinâmicas em vez de fixas
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor, 
       appBar: AppBar(
         backgroundColor: const Color(0xFF4D9C89),
         centerTitle: true,
-        elevation: 0, // Removi a sombra para um visual mais limpo
+        elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Row(
           mainAxisSize: MainAxisSize.min,
@@ -49,19 +52,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(height: 30),
-              
               _buildCounterCard(
+                context,
                 title: 'PRODUTOS EM ESTOQUE',
                 count: totalQuantidadeProdutos.toString(),
+                isDark: isDark,
               ),
-              
               const SizedBox(height: 20),
-              
               _buildCounterCard(
+                context,
                 title: 'FORNECEDORES CADASTRADOS',
                 count: totalFornecedores.toString(),
+                isDark: isDark,
               ),
-              
               const SizedBox(height: 30),
             ],
           ),
@@ -70,21 +73,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildCounterCard({required String title, required String count}) {
+  Widget _buildCounterCard(BuildContext context, {required String title, required String count, required bool isDark}) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(vertical: 20),
         decoration: BoxDecoration(
-          // Se quiser os cards internos um pouquinho diferentes, use F5F5F5
-          // Se quiser TUDO branco, mude para Colors.white
-          color: const Color(0xFFF5F5F5), 
+          // 4. Cor do card interno baseada no tema
+          color: isDark ? Colors.grey[850] : const Color(0xFFF5F5F5),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: const Color(0xFF4D9C89), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05), // Sombra bem sutil
+              color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -94,19 +96,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 letterSpacing: 0.5,
+                // 5. Cor do texto dinâmica
+                color: isDark ? Colors.white70 : Colors.black,
               ),
             ),
             const SizedBox(height: 10),
             Text(
               count,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 48,
-                color: Colors.black,
+                // 5. Cor do texto dinâmica
+                color: isDark ? Colors.white : Colors.black,
               ),
             ),
           ],

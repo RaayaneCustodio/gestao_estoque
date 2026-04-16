@@ -8,6 +8,8 @@ import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:gestao_estoque/widgets/theme.dart';
 
 
+// ... seus imports
+
 class MyApp extends StatelessWidget {
   final SuppliersRepository suppliersRepository;
   final ProductsRepository productsRepository;
@@ -34,7 +36,12 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'Gestão de Estoque',
             debugShowCheckedModeBanner: false,
-            theme: (theme == ThemeMode.dark) ? darkTheme : lightTheme,
+            // O segredo está aqui: se for o tema claro, garantimos o fundo branco
+            theme: lightTheme.copyWith(
+              scaffoldBackgroundColor: Colors.white,
+            ),
+            darkTheme: darkTheme, // Mantém o tema escuro original
+            themeMode: theme,     // Usa o ValueListenable para trocar
             routerConfig: routes,
           );
         },
