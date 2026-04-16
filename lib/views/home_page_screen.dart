@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/views/dashboard_screen.dart';
 import 'package:gestao_estoque/views/settings_screen.dart';
 import 'package:gestao_estoque/views/suppliers_screen.dart';
+import 'package:gestao_estoque/views/products_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         controller: pc,
         children: [
           DashboardScreen(),
-          DashboardScreen(),
+          ProductsScreen(productsViewmodel: (context).read()),
           SuppliersScreen(suppliersViewmodel: (context).read()),
           SettingsScreen(),
         ],

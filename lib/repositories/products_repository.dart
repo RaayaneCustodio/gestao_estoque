@@ -31,18 +31,18 @@ class ProductsRepository {
     _productsList.add(newProduct);
   }
 
-  // Simula um carregamento do banco de dados (usando o delay do professor)
+
   Future<List<Product>> loadProducts() async {
-    await Future.delayed(const Duration(seconds: 1)); // Reduzi para 1s para ser mais ágil
+    await Future.delayed(const Duration(seconds: 1));
     return products;
   }
 
-  // Remove um produto pelo ID
+
   void removeProduct(int id) {
     _productsList.removeWhere((product) => product.id == id);
   }
 
-  // Atualiza um produto existente
+
   void updateProduct(int id, String newName, int newQuantity, double newPrice) {
     final index = _productsList.indexWhere((product) => product.id == id);
     if (index != -1) {

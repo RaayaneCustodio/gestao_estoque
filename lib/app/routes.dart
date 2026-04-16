@@ -40,6 +40,12 @@ final routes = GoRouter(
           SuppliersScreen(suppliersViewmodel: context.read()),
     ),
     GoRoute(
+      path: Routes.addProduct,
+      name: Routes.addProduct,
+      builder: (context, state) =>
+          AddProductScreen(productsViewModel: context.read()),
+    ),
+    GoRoute(
       path: Routes.suppliersRegister,
       name: Routes.suppliersRegister,
       builder: (context, state) =>
@@ -50,12 +56,6 @@ final routes = GoRouter(
       name: Routes.products,
       builder: (context, state) =>
           ProductsScreen(productsViewmodel: context.read()),
-    ),
-    GoRoute(
-      path: Routes.addProduct,
-      name: Routes.addProduct,
-      builder: (context, state) =>
-          AddProductScreen(productsViewModel: context.read()),
     ),
   ],
 );
