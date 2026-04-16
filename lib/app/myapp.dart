@@ -3,7 +3,7 @@ import 'package:gestao_estoque/app/routes.dart';
 import 'package:gestao_estoque/repositories/suppliers_repository.dart';
 import 'package:provider/provider.dart';
 import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
-
+import 'package:gestao_estoque/widgets/theme.dart';
 
 class MyApp extends StatelessWidget {
   final SuppliersRepository suppliersRepository;
@@ -19,14 +19,13 @@ class MyApp extends StatelessWidget {
               SuppliersViewmodel(suppliersRepository: context.read()),
         ),
       ],
-      child: Builder(
-        builder: (context) {
+      child: ValueListenableBuilder(
+        valueListenable: themeMode,
+        builder: (context, theme, _) {
           return MaterialApp.router(
             title: 'Gestão de Estoque',
             debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              colorScheme: ColorScheme.fromSeed(seedColor: Color(0xFF4D9C89)),
-            ),
+            theme: (theme == ThemeMode.dark) ? darkTheme : lightTheme,
             routerConfig: routes,
           );
         },

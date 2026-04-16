@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
-import 'package:gestao_estoque/repositories/suppliers_repository.dart';
 import 'package:gestao_estoque/views/suppliers_register_screen.dart';
 import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/widgets/simple_appbar.dart';
 import 'package:provider/provider.dart';
 
 class SuppliersScreen extends StatefulWidget {
@@ -16,53 +16,95 @@ class SuppliersScreen extends StatefulWidget {
 
 class _SuppliersScreenState extends State<SuppliersScreen> {
   List<Suppliers> selected = [];
-  
-  appBarDinamica() {
-    if (selected.isEmpty) {
-      return AppBar(
-        title: Text(
-          'FORNECEDORES',
-          style: TextStyle(fontSize: 17, color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFF4D9C89),
-        iconTheme: IconThemeData(color: Colors.white),
-      );
-    } else {
+  bool isSearching = false;
+  final TextEditingController searchController = TextEditingController();
+  String searchTerm = "";
+
+  PreferredSizeWidget appBarDinamica() {
+    if (selected.isNotEmpty) {
       return AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
-          onPressed: () {
-            setState(() {
-              selected = [];
-            });
-          },
+          onPressed: clearSelected,
         ),
-        title: (selected.length == 1)
-            ? Text(
-                '${selected.length} selecionado',
-                style: TextStyle(fontSize: 17),
-              )
-            : Text(
-                '${selected.length} selecionados',
-                style: TextStyle(fontSize: 17),
-              ),
+        title: Text(
+          '${selected.length} selecionado${selected.length > 1 ? 's' : ''}',
+          style: TextStyle(fontSize: 17),
+        ),
         centerTitle: true,
         backgroundColor: Colors.blueGrey[100],
         elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black),
         actions: [
-          IconButton(icon: Icon(Icons.delete, color: Colors.blueGrey), onPressed: (){
-            for(final supplier in selected){
-              context.read<SuppliersViewmodel>().removeSupplier(supplier);
-            }
-            setState(() {
-              selected = [];
-            });
-          },)
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.blueGrey),
+            onPressed: () {
+              for (final supplier in selected) {
+                context.read<SuppliersViewmodel>().removeSupplier(supplier);
+              }
+              clearSelected();
+            },
+          ),
         ],
       );
     }
+
+    return AppBar(
+      backgroundColor: const Color(0xFF4D9C89),
+      title: AnimatedSwitcher(
+        duration: Duration(milliseconds: 300),
+        transitionBuilder: (child, animation) {
+          return FadeTransition(
+            opacity: animation,
+            child: SizeTransition(
+              sizeFactor: animation,
+              axis: Axis.horizontal,
+              child: child,
+            ),
+          );
+        },
+        child: isSearching
+            ? TextField(
+                key: ValueKey('search'),
+                controller: searchController,
+                autofocus: true,
+                style: TextStyle(color: Colors.white),
+                cursorColor: Colors.green,
+                decoration: InputDecoration(
+                  hintText: 'Buscar fornecedor...',
+                  hintStyle: TextStyle(color: Colors.white70),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchTerm = value;
+                  });
+                },
+              )
+            : Text(
+                'FORNECEDORES',
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+      ),
+      centerTitle: true,
+      actions: [
+        IconButton(
+          icon: Icon(
+            isSearching ? Icons.close : Icons.search,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            setState(() {
+              isSearching = !isSearching;
+
+              if (!isSearching) {
+                searchController.clear();
+                searchTerm = "";
+              }
+            });
+          },
+        ),
+      ],
+    );
   }
 
   clearSelected() {
@@ -82,81 +124,101 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   @override
   Widget build(BuildContext context) {
     final table = context.watch<SuppliersViewmodel>().suppliers;
+    final filteredList = table.where((supplier) {
+      final nome = supplier.nome.toLowerCase();
+      final email = supplier.email.toLowerCase();
+      final telefone = supplier.telefone;
+
+      final busca = searchTerm.toLowerCase();
+
+      return nome.contains(busca) ||
+          email.contains(busca) ||
+          telefone.contains(busca);
+    }).toList();
+
     return Scaffold(
       appBar: appBarDinamica(),
       body: ListView.separated(
         itemBuilder: (BuildContext context, int id) {
-          return ListTile(
-            title: Text(
-              table[id].nome,
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+          return Card(
+            elevation: 4,
+            margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: Colors.green, width: 1),
             ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.phone, size: 16),
-                    SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        table[id].telefone,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+            child: ListTile(
+              title: Text(
+                filteredList[id].nome,
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.phone, size: 16),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          filteredList[id].telefone,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.email, size: 16),
-                    SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        table[id].email,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            leading: (selected.contains(table[id]))
-                ? CircleAvatar(child: Icon(Icons.check))
-                : SizedBox(child: Icon(Icons.people), width: 10),
-            selected: selected.contains(table[id]),
-            selectedTileColor:
-                Colors.blueGrey[50], //mudar para cor verde do código do figma
-            onLongPress: () {
-              setState(() {
-                (selected.contains(table[id]))
-                    ? selected.remove(table[id])
-                    : selected.add(table[id]);
-              });
-            },
-            trailing: PopupMenuButton(
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: ListTile(
-                    title: Text('Remover'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.read<SuppliersViewmodel>().removeSupplier(
-                        table[id],
-                      );
-                    },
+                    ],
                   ),
-                ),
-              ],
+                  Row(
+                    children: [
+                      Icon(Icons.email, size: 16),
+                      SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          filteredList[id].email,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              leading: (selected.contains(table[id]))
+                  ? CircleAvatar(child: Icon(Icons.check))
+                  : SizedBox(child: Icon(Icons.people), width: 10),
+              selected: selected.contains(filteredList[id]),
+              selectedTileColor:
+                  Colors.blueGrey[50], //mudar para cor verde do código do figma
+              onLongPress: () {
+                setState(() {
+                  (selected.contains(filteredList[id]))
+                      ? selected.remove(filteredList[id])
+                      : selected.add(filteredList[id]);
+                });
+              },
+              trailing: PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    child: ListTile(
+                      title: Text('Remover'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        context.read<SuppliersViewmodel>().removeSupplier(
+                          filteredList[id],
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
-        separatorBuilder: (_, ___) => Divider(),
-        itemCount: table.length,
+        separatorBuilder: (_, _) => Divider(),
+        itemCount: filteredList.length,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -171,16 +233,6 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
         child: Icon(Icons.add_business_outlined),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      /*bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(), // Cria o efeito de corte para o botão
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-            IconButton(icon: Icon(Icons.search), onPressed: () {}),
-          ],
-        ),
-      ),*/
     );
   }
 }
