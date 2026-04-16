@@ -31,7 +31,13 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
         emailController.text,
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Fornecedor salvo com sucesso!')),
+        const SnackBar(
+          content: Text(
+            'Fornecedor salvo com sucesso!',
+            textAlign: TextAlign.center,
+          ),
+          backgroundColor: Color(0xFF4D9C89),
+        ),
       );
       Navigator.pop(context);
     }
@@ -42,111 +48,145 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text(
-          'Adicionar Fornecedor',
-          style: TextStyle(fontSize: 19, color: Colors.white),
+        title: const Text(
+          'CADASTRO FORNECEDOR',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Color(0xFF4D9C89),
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: const Color(0xFF4D9C89),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Card(
-        elevation: 4,
-        margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10), // borda arredondada
-          side: BorderSide(
-            color: Colors.green, // cor da borda
-            width: 1,
-          ),
-        ),
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: formkey,
-            child: ListView(
-              children: [
-                TextFormField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.add_business),
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    labelText: 'Nome (Razão Social)',
-                    contentPadding: EdgeInsets.all(10),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: const Color(0xFF4D9C89), width: 2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Form(
+              key: formkey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Nome (Razão Social)',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'O campo nome é obrigatório';
-                    }
-                    return null;
-                  },
-                ),
-                Padding(padding: const EdgeInsets.only(top: 10.0)),
-                TextFormField(
-                  controller: phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    labelText: 'Telefone',
-                    contentPadding: EdgeInsets.all(10),
-                  ),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'O campo nome é obrigatório';
-                    }
-                    return null;
-                  },
-                ),
-                Padding(padding: const EdgeInsets.only(top: 10.0)),
-                TextFormField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    labelText: 'E-mail',
-                    contentPadding: EdgeInsets.all(10),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'O e-mail é obrigatório';
-                    }
-
-                    final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
-
-                    if (!emailRegex.hasMatch(value)) {
-                      return 'Digite um e-mail válido';
-                    }
-
-                    return null;
-                  },
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: FilledButton(
-                    onPressed: save,
-                    style: FilledButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextFormField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFD9D9D9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorStyle: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
                       ),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Row(
-                        mainAxisAlignment: .center,
-                        children: [
-                          Icon(Icons.check),
-                          SizedBox(width: 10),
-                          Text('Salvar', style: TextStyle(fontSize: 22)),
-                        ],
-                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'O campo nome é obrigatório';
+                        }
+                        return null;
+                      },
                     ),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Telefone',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextFormField(
+                      controller: phoneController,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFD9D9D9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorStyle: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'O campo telefone é obrigatório';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'E-mail',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: TextFormField(
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xFFD9D9D9),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        errorStyle: const TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'O e-mail é obrigatório';
+                        }
+                        final emailRegex =
+                            RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+                        if (!emailRegex.hasMatch(value)) {
+                          return 'Digite um e-mail válido';
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  Center(
+                    child: SizedBox(
+                      width: 160,
+                      height: 50,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFD9D9D9),
+                          foregroundColor: Colors.black,
+                          side: const BorderSide(
+                            color: Color(0xFF4D9C89),
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0),
+                          ),
+                        ),
+                        onPressed: save,
+                        child: const Text(
+                          'CONFIRMAR',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
