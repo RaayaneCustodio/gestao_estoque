@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/views/suppliers_register_screen.dart';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
-import 'package:gestao_estoque/widgets/simple_appbar.dart';
 import 'package:provider/provider.dart';
 
 class SuppliersScreen extends StatefulWidget {
@@ -20,28 +19,51 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
   final TextEditingController searchController = TextEditingController();
   String searchTerm = "";
 
+  Future<bool?> _showDeleteDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Exclusão'),
+        content: const Text('Tem certeza que deseja remover este fornecedor?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('CANCELAR', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('REMOVER', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
+
   PreferredSizeWidget appBarDinamica() {
     if (selected.isNotEmpty) {
       return AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
           onPressed: clearSelected,
         ),
         title: Text(
           '${selected.length} selecionado${selected.length > 1 ? 's' : ''}',
-          style: TextStyle(fontSize: 17),
+          style: const TextStyle(fontSize: 17),
         ),
         centerTitle: true,
         backgroundColor: Colors.blueGrey[100],
         elevation: 1,
         actions: [
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.blueGrey),
-            onPressed: () {
-              for (final supplier in selected) {
-                context.read<SuppliersViewmodel>().removeSupplier(supplier);
+            icon: const Icon(Icons.delete, color: Colors.blueGrey),
+            onPressed: () async {
+              final confirmed = await _showDeleteDialog();
+              if (confirmed == true) {
+                for (final supplier in selected) {
+                  context.read<SuppliersViewmodel>().removeSupplier(supplier);
+                }
+                clearSelected();
               }
-              clearSelected();
             },
           ),
         ],
@@ -51,25 +73,15 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
     return AppBar(
       backgroundColor: const Color(0xFF4D9C89),
       title: AnimatedSwitcher(
-        duration: Duration(milliseconds: 300),
-        transitionBuilder: (child, animation) {
-          return FadeTransition(
-            opacity: animation,
-            child: SizeTransition(
-              sizeFactor: animation,
-              axis: Axis.horizontal,
-              child: child,
-            ),
-          );
-        },
+        duration: const Duration(milliseconds: 300),
         child: isSearching
             ? TextField(
-                key: ValueKey('search'),
+                key: const ValueKey('search'),
                 controller: searchController,
                 autofocus: true,
-                style: TextStyle(color: Colors.white),
-                cursorColor: Colors.green,
-                decoration: InputDecoration(
+                style: const TextStyle(color: Colors.white),
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
                   hintText: 'Buscar fornecedor...',
                   hintStyle: TextStyle(color: Colors.white70),
                   border: InputBorder.none,
@@ -80,22 +92,19 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                   });
                 },
               )
-            : Text(
+            : const Text(
                 'FORNECEDORES',
-                style: TextStyle(fontSize: 18, color: Colors.white),
+                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
       ),
       centerTitle: true,
+      iconTheme: const IconThemeData(color: Colors.white),
       actions: [
         IconButton(
-          icon: Icon(
-            isSearching ? Icons.close : Icons.search,
-            color: Colors.white,
-          ),
+          icon: Icon(isSearching ? Icons.close : Icons.search, color: Colors.white),
           onPressed: () {
             setState(() {
               isSearching = !isSearching;
-
               if (!isSearching) {
                 searchController.clear();
                 searchTerm = "";
@@ -113,14 +122,6 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
     });
   }
 
-  void onSave() {
-    if (widget.suppliersViewmodel.feedback.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.suppliersViewmodel.feedback)),
-      );
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final table = context.watch<SuppliersViewmodel>().suppliers;
@@ -128,119 +129,117 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
       final nome = supplier.nome.toLowerCase();
       final email = supplier.email.toLowerCase();
       final telefone = supplier.telefone;
-
       final busca = searchTerm.toLowerCase();
 
-      return nome.contains(busca) ||
-          email.contains(busca) ||
-          telefone.contains(busca);
+      return nome.contains(busca) || email.contains(busca) || telefone.contains(busca);
     }).toList();
 
     return Scaffold(
       appBar: appBarDinamica(),
       body: filteredList.isEmpty
-          ? const Center(
-              child: ListTile(
-                leading: Icon(Icons.info_outline),
-                title: Text('Nenhum item na lista ainda'),
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.groups, size: 80, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Nenhum fornecedor cadastrado',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
             )
           : ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 10),
               itemBuilder: (BuildContext context, int id) {
+                final supplier = filteredList[id];
+                final isSelected = selected.contains(supplier);
+
                 return Card(
                   elevation: 4,
-                  margin: EdgeInsets.symmetric(horizontal: 5, vertical: 6),
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: Colors.green, width: 1),
+                    side: const BorderSide(color: Color(0xFF4D9C89), width: 1.5),
                   ),
                   child: ListTile(
                     title: Text(
-                      filteredList[id].nome,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      supplier.nome,
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const SizedBox(height: 5),
                         Row(
                           children: [
-                            Icon(Icons.phone, size: 16),
-                            SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                filteredList[id].telefone,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                            const Icon(Icons.phone, size: 16, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Expanded(child: Text(supplier.telefone)),
                           ],
                         ),
                         Row(
                           children: [
-                            Icon(Icons.email, size: 16),
-                            SizedBox(width: 5),
-                            Expanded(
-                              child: Text(
-                                filteredList[id].email,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
+                            const Icon(Icons.email, size: 16, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Expanded(child: Text(supplier.email)),
                           ],
                         ),
                       ],
                     ),
-                    leading: (selected.contains(table[id]))
-                        ? CircleAvatar(child: Icon(Icons.check))
-                        : SizedBox(child: Icon(Icons.people), width: 10),
-                    selected: selected.contains(filteredList[id]),
-                    selectedTileColor: Colors
-                        .blueGrey[50], //mudar para cor verde do código do figma
+                    leading: isSelected
+                        ? const CircleAvatar(
+                            backgroundColor: Color(0xFF4D9C89),
+                            child: Icon(Icons.check, color: Colors.white),
+                          )
+                        : const Icon(Icons.people, color: Color(0xFF4D9C89)),
+                    selected: isSelected,
+                    selectedTileColor: const Color(0xFFE8F5E9),
                     onLongPress: () {
                       setState(() {
-                        (selected.contains(filteredList[id]))
-                            ? selected.remove(filteredList[id])
-                            : selected.add(filteredList[id]);
+                        isSelected ? selected.remove(supplier) : selected.add(supplier);
                       });
                     },
                     trailing: PopupMenuButton(
-                      icon: Icon(Icons.more_vert),
+                      icon: const Icon(Icons.more_vert),
                       itemBuilder: (context) => [
                         PopupMenuItem(
-                          child: ListTile(
+                          child: const ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.delete, color: Colors.red),
                             title: Text('Remover'),
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.read<SuppliersViewmodel>().removeSupplier(
-                                filteredList[id],
-                              );
-                            },
                           ),
+                          onTap: () {
+                            Future.delayed(const Duration(milliseconds: 10), () async {
+                              final confirmed = await _showDeleteDialog();
+                              if (confirmed == true) {
+                                context.read<SuppliersViewmodel>().removeSupplier(supplier);
+                              }
+                            });
+                          },
                         ),
                       ],
                     ),
                   ),
                 );
               },
-              separatorBuilder: (_, _) => Divider(),
+              separatorBuilder: (_, __) => const SizedBox(height: 2),
               itemCount: filteredList.length,
             ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF4D9C89),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  SuppliersRegister(suppliersViewmodel: context.read()),
+              builder: (_) => SuppliersRegister(suppliersViewmodel: context.read()),
             ),
           );
         },
-        child: Icon(Icons.add_business_outlined),
+        child: const Icon(Icons.add_business_outlined, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

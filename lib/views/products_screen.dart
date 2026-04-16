@@ -14,66 +14,82 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
+  bool isSearching = false;
+  final TextEditingController searchController = TextEditingController();
+  String searchTerm = "";
   List<Product> selected = [];
-  
-  appBarDinamica() {
-    if (selected.isEmpty) {
-      return AppBar(
-        title: Text(
-          'PRODUTOS',
-          style: TextStyle(fontSize: 17, color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: Color(0xFF4D9C89),
-        iconTheme: IconThemeData(color: Colors.white),
-      );
-    } else {
-      return AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
-          onPressed: () {
-            setState(() {
-              selected = [];
-            });
-          },
-        ),
-        title: (selected.length == 1)
-            ? Text(
-                '${selected.length} selecionado',
-                style: TextStyle(fontSize: 17),
-              )
-            : Text(
-                '${selected.length} selecionados',
-                style: TextStyle(fontSize: 17),
-              ),
-        centerTitle: true,
-        backgroundColor: Colors.blueGrey[100],
-        elevation: 1,
-        iconTheme: IconThemeData(color: Colors.black),
-        actions: [
-          IconButton(icon: Icon(Icons.delete, color: Colors.blueGrey), onPressed: (){
-            for(final product in selected){
-              context.read<ProductsViewModel>().removeProduct(product);
-            }
-            setState(() {
-              selected = [];
-            });
-          },)
-        ],
-      );
-    }
-  }
 
-  clearSelected() {
+  // Função para limpar seleção
+  void clearSelected() {
     setState(() {
       selected = [];
     });
   }
 
-  void onSave() {
-    if (widget.productsViewmodel.feedback.isNotEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(widget.productsViewmodel.feedback)),
+  // Diálogo de confirmação unificado
+  Future<bool?> _showDeleteDialog() {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar Exclusão'),
+        content: const Text('Tem certeza que deseja remover o(s) item(ns) selecionado(s)?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('CANCELAR', style: TextStyle(color: Colors.grey)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'REMOVER',
+              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // AppBar Dinâmica
+  PreferredSizeWidget appBarDinamica() {
+    if (selected.isEmpty) {
+      return AppBar(
+        title: const Text(
+          'PRODUTOS',
+          style: TextStyle(fontSize: 17, color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF4D9C89),
+        iconTheme: const IconThemeData(color: Colors.white),
+      );
+    } else {
+      return AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.blueGrey),
+          onPressed: clearSelected,
+        ),
+        title: Text(
+          '${selected.length} selecionado${selected.length > 1 ? 's' : ''}',
+          style: const TextStyle(fontSize: 17),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey[100],
+        elevation: 1,
+        iconTheme: const IconThemeData(color: Colors.black),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.blueGrey),
+            onPressed: () async {
+              final confirmed = await _showDeleteDialog();
+              if (confirmed == true) {
+                for (final product in selected) {
+                  context.read<ProductsViewModel>().removeProduct(product);
+                }
+                clearSelected();
+              }
+            },
+          ),
+        ],
       );
     }
   }
@@ -81,105 +97,114 @@ class _ProductsScreenState extends State<ProductsScreen> {
   @override
   Widget build(BuildContext context) {
     final table = context.watch<ProductsViewModel>().products;
+
     return Scaffold(
       appBar: appBarDinamica(),
-      body: ListView.separated(
-        itemBuilder: (BuildContext context, int id) {
-          return ListTile(
-            title: Text(
-              table[id].nomeProduto,
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.inventory_2, size: 16),
-                    SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        'Qtd: ${table[id].quantidade}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    Icon(Icons.attach_money, size: 16),
-                    SizedBox(width: 5),
-                    Expanded(
-                      child: Text(
-                        'Preço: R\$ ${table[id].preco}',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            leading: (selected.contains(table[id]))
-                ? CircleAvatar(child: Icon(Icons.check))
-                : SizedBox(child: Icon(Icons.shopping_cart), width: 10),
-            selected: selected.contains(table[id]),
-            selectedTileColor:
-                Colors.blueGrey[50], //mudar para cor verde do código do figma
-            onLongPress: () {
-              setState(() {
-                (selected.contains(table[id]))
-                    ? selected.remove(table[id])
-                    : selected.add(table[id]);
-              });
-            },
-            trailing: PopupMenuButton(
-              icon: Icon(Icons.more_vert),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  child: ListTile(
-                    title: Text('Remover'),
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.read<ProductsViewModel>().removeProduct(
-                        table[id],
-                      );
-                    },
+      body: table.isEmpty
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.inventory_2_outlined, size: 80, color: Colors.grey[400]),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Nenhum produto cadastrado',
+                    style: TextStyle(fontSize: 18, color: Colors.grey[600], fontWeight: FontWeight.w500),
                   ),
-                ),
-              ],
+                ],
+              ),
+            )
+          : ListView.separated(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              itemCount: table.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 2),
+              itemBuilder: (BuildContext context, int id) {
+                final product = table[id];
+                final isSelected = selected.contains(product);
+
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    side: const BorderSide(color: Color(0xFF4D9C89), width: 1.5),
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      product.nomeProduto,
+                      style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.inventory_2, size: 16, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Expanded(child: Text('Qtd: ${product.quantidade}')),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            const Icon(Icons.attach_money, size: 16, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Expanded(child: Text('Preço: R\$ ${product.preco.toStringAsFixed(2)}')),
+                          ],
+                        ),
+                      ],
+                    ),
+                    leading: isSelected
+                        ? const CircleAvatar(
+                            backgroundColor: Color(0xFF4D9C89),
+                            child: Icon(Icons.check, color: Colors.white),
+                          )
+                        : const Icon(Icons.inventory, color: Color(0xFF4D9C89)), // ÍCONE ALTERADO AQUI
+                    selected: isSelected,
+                    selectedTileColor: const Color(0xFFE8F5E9),
+                    onLongPress: () {
+                      setState(() {
+                        isSelected ? selected.remove(product) : selected.add(product);
+                      });
+                    },
+                    trailing: PopupMenuButton(
+                      icon: const Icon(Icons.more_vert),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.delete, color: Colors.red),
+                            title: const Text('Remover'),
+                            onTap: () async {
+                              Navigator.pop(context); // Fecha o menu
+                              final confirmed = await _showDeleteDialog();
+                              if (confirmed == true) {
+                                context.read<ProductsViewModel>().removeProduct(product);
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-        separatorBuilder: (_, ___) => Divider(),
-        itemCount: table.length,
-      ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFF4D9C89),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) =>
-                  AddProductScreen(productsViewModel: context.read()),
+              builder: (_) => AddProductScreen(productsViewModel: context.read()),
             ),
           );
         },
-        child: Icon(Icons.add_shopping_cart),
+        child: const Icon(Icons.add_box, color: Colors.white), // ÍCONE ALTERADO AQUI
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      /*bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(), // Cria o efeito de corte para o botão
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(icon: Icon(Icons.menu), onPressed: () {}),
-            IconButton(icon: Icon(Icons.search), onPressed: () {}),
-          ],
-        ),
-      ),*/
     );
   }
 }
