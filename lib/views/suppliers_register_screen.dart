@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 
 class SuppliersRegister extends StatefulWidget {
   final SuppliersViewmodel suppliersViewmodel;

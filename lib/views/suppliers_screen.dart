@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/views/suppliers_register_screen.dart';
-import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:gestao_estoque/widgets/simple_appbar.dart';
 import 'package:provider/provider.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/app/routes.dart';
 import 'package:gestao_estoque/repositories/suppliers_repository.dart';
 import 'package:provider/provider.dart';
-import 'package:gestao_estoque/views/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:gestao_estoque/widgets/theme.dart';
 
 class MyApp extends StatelessWidget {
