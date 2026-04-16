@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/products.dart';
 import 'package:gestao_estoque/views/add_product_screen.dart';
-import 'package:gestao_estoque/views/products_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatefulWidget {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gestao_estoque/views/products_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 
 class AddProductScreen extends StatefulWidget {
   final ProductsViewModel productsViewModel;
