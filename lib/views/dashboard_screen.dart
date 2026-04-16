@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
+import 'package:gestao_estoque/models/products.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gestao_estoque/app/routes.dart';
 
@@ -20,6 +21,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     context.push(Routes.suppliers);
   }
 
+  selectProductsPage() {
+    context.push(Routes.products);
+  }
+
   @override
   Widget build(BuildContext context) {
     //final table = SuppliersRepository.table;
@@ -27,14 +32,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         //leading:, //logo da empresa
         centerTitle: true,
-        title: Text('Gestão de Estoque'),
+        title: const Text('Gestão de Estoque'),
       ),
       body: ListView.separated(
         itemCount: options.length,
         itemBuilder: (context, index) => ListTile(
           title: Text(options[index]),
           onTap: () {
-            if (options[index] == 'Fornecedores') {
+            if (options[index] == 'Produtos') {
+              selectProductsPage();
+            } else if (options[index] == 'Fornecedores') {
               selectSuppliersPage();
             }
           },
