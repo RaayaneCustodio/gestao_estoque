@@ -24,14 +24,14 @@ final routes = GoRouter(
       path: Routes.homePageScreen,
       name: Routes.homePageScreen,
       builder: (context, state) => HomePageScreen(
-        //productsViewmodel: context.read(),
+        
       ),
     ),
     GoRoute(
       path: Routes.dashboard,
       name: Routes.dashboard,
       builder: (context, state) => DashboardScreen(
-        //productsViewmodel: context.read(),
+        
       ),
     ),
     GoRoute(
