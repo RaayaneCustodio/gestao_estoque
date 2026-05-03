@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 
-class SuppliersRegister extends StatefulWidget {
-  final SuppliersViewmodel suppliersViewmodel;
-  const SuppliersRegister({super.key, required this.suppliersViewmodel});
+class CustomersRegister extends StatefulWidget {
+  final CustomersViewModel customersViewModel;
+  const CustomersRegister({super.key, required this.customersViewModel});
 
   @override
-  State<SuppliersRegister> createState() => _SuppliersRegisterState();
+  State<CustomersRegister> createState() => _CustomersRegisterState();
 }
 
-class _SuppliersRegisterState extends State<SuppliersRegister> {
+class _CustomersRegisterState extends State<CustomersRegister> {
   final formkey = GlobalKey<FormState>();
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
@@ -25,7 +25,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
 
   void save() {
     if (formkey.currentState!.validate()) {
-      widget.suppliersViewmodel.saveSuppliers(
+      widget.customersViewModel.saveCustomers(
         nameController.text,
         phoneController.text,
         emailController.text,
@@ -33,7 +33,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
-            'Fornecedor salvo com sucesso!',
+            'Cliente salvo com sucesso!',
             textAlign: TextAlign.center,
           ),
           backgroundColor: Color(0xFF66BB6A),
@@ -49,7 +49,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'CADASTRO FORNECEDOR',
+          'CADASTRO CLIENTE',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),

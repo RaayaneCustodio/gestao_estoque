@@ -20,12 +20,13 @@ class ProductsRepository {
       UnmodifiableListView(_productsList);
 
  
-  void addProduct(String name, int quantity, double price) {
+  void addProduct(String name, int quantity, double price, int? supplierId) {
     final newProduct = Product(
       id: getNextId(),
       nomeProduto: name,
       quantidade: quantity,
       preco: price,
+      supplierId: supplierId,
     );
 
     _productsList.add(newProduct);
@@ -43,12 +44,13 @@ class ProductsRepository {
   }
 
 
-  void updateProduct(int id, String newName, int newQuantity, double newPrice) {
+  void updateProduct(int id, String newName, int newQuantity, double newPrice, int? newSupplierId) {
     final index = _productsList.indexWhere((product) => product.id == id);
     if (index != -1) {
       _productsList[index].nomeProduto = newName;
       _productsList[index].quantidade = newQuantity;
       _productsList[index].preco = newPrice;
+      _productsList[index].supplierId = newSupplierId;
     }
   }
 }

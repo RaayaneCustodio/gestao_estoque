@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/repositories/suppliers_repository.dart';
 import 'package:gestao_estoque/repositories/products_repository.dart';
+import 'package:gestao_estoque/repositories/customers_repository.dart';
+import 'package:gestao_estoque/repositories/sale_repository.dart';
 import 'app/myapp.dart';
 
 void main() {
@@ -8,6 +10,8 @@ void main() {
     MyApp(
       suppliersRepository: SuppliersRepository(),
       productsRepository: ProductsRepository(),
+      customersRepository: CustomersRepository(),
+      saleRepository: SaleRepository(),
     ),
   );
 }

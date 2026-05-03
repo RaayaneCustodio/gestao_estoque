@@ -3,6 +3,9 @@ import 'package:gestao_estoque/views/dashboard_screen.dart';
 import 'package:gestao_estoque/views/settings_screen.dart';
 import 'package:gestao_estoque/views/suppliers_screen.dart';
 import 'package:gestao_estoque/views/products_screen.dart';
+import 'package:gestao_estoque/views/customers_screen.dart';
+import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -35,8 +38,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
         controller: pc,
         children: [
           DashboardScreen(),
-          ProductsScreen(productsViewmodel: (context).read()),
-          SuppliersScreen(suppliersViewmodel: (context).read()),
+          ProductsScreen(
+            productsViewmodel: context.read(),
+            suppliersViewmodel: context.read<SuppliersViewmodel>(),
+          ),
+          SuppliersScreen(suppliersViewmodel: context.read()),
+          CustomersScreen(customersViewModel: context.read<CustomersViewModel>()),
           SettingsScreen(),
         ],
         onPageChanged: setCurrentPage,
@@ -55,6 +62,10 @@ class _HomePageScreenState extends State<HomePageScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
             label: 'Fornecedores',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.people),
+            label: 'Clientes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),

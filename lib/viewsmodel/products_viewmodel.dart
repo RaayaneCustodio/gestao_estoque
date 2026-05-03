@@ -26,11 +26,13 @@ class ProductsViewModel extends ChangeNotifier {
     String name,
     int quantity,
     double price,
+    int? supplierId
   ) {
     productsRepository.addProduct(
       name,
       quantity,
       price,
+      supplierId
     );
     feedback = '$name foi salvo!';
     notifyListeners();
@@ -50,6 +52,7 @@ class ProductsViewModel extends ChangeNotifier {
       product.nomeProduto,
       product.quantidade,
       product.preco.toDouble(),
+      product.supplierId,
     );
     load();
   }
