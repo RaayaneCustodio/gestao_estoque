@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 
 class SuppliersRegister extends StatefulWidget {
   final SuppliersViewmodel suppliersViewmodel;
-  const SuppliersRegister({super.key, required this.suppliersViewmodel});
+  final Suppliers? suppliers;
+  const SuppliersRegister({
+    super.key,
+    required this.suppliersViewmodel,
+    this.suppliers,
+  });
 
   @override
   State<SuppliersRegister> createState() => _SuppliersRegisterState();
@@ -23,17 +29,40 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.suppliers != null) {
+      nameController.text = widget.suppliers!.nome;
+      phoneController.text = widget.suppliers!.telefone;
+      emailController.text = widget.suppliers!.email;
+    }
+  }
+
   void save() {
     if (formkey.currentState!.validate()) {
-      widget.suppliersViewmodel.saveSuppliers(
-        nameController.text,
-        phoneController.text,
-        emailController.text,
-      );
+      if (widget.suppliers == null) {
+        widget.suppliersViewmodel.saveSuppliers(
+          nameController.text,
+          phoneController.text,
+          emailController.text,
+        );
+      } else {
+        Suppliers fornecedorEditado = Suppliers(
+          id: widget.suppliers!.id,
+          nome: nameController.text,
+          telefone: phoneController.text,
+          email: emailController.text,
+        );
+        widget.suppliersViewmodel.editSupplier(fornecedorEditado);
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Fornecedor salvo com sucesso!',
+            widget.suppliers == null
+                ? 'Fornecedor salvo com sucesso!'
+                : 'Fornecedor atualizado com sucesso!',
             textAlign: TextAlign.center,
           ),
           backgroundColor: Color(0xFF66BB6A),
@@ -48,8 +77,10 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'CADASTRO FORNECEDOR',
+        title: Text(
+          widget.suppliers == null
+              ? 'CADASTRO FORNECEDOR'
+              : 'EDITAR FORNECEDOR',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
@@ -88,7 +119,9 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         errorStyle: const TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -116,7 +149,9 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         errorStyle: const TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -144,14 +179,15 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                         errorStyle: const TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold),
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'O e-mail é obrigatório';
                         }
-                        final emailRegex =
-                            RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
+                        final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w+$');
                         if (!emailRegex.hasMatch(value)) {
                           return 'Digite um e-mail válido';
                         }

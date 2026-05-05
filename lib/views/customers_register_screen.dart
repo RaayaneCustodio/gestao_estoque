@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gestao_estoque/models/customers.dart';
 import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 
 class CustomersRegister extends StatefulWidget {
   final CustomersViewModel customersViewModel;
-  const CustomersRegister({super.key, required this.customersViewModel});
+  final Customers? customer; 
+
+  const CustomersRegister({super.key, required this.customersViewModel, this.customer});
 
   @override
   State<CustomersRegister> createState() => _CustomersRegisterState();
@@ -23,17 +26,38 @@ class _CustomersRegisterState extends State<CustomersRegister> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.customer != null) {
+      nameController.text = widget.customer!.nome;
+      phoneController.text = widget.customer!.telefone;
+      emailController.text = widget.customer!.email;
+    }
+  }
+
   void save() {
     if (formkey.currentState!.validate()) {
-      widget.customersViewModel.saveCustomers(
-        nameController.text,
-        phoneController.text,
-        emailController.text,
-      );
+      if (widget.customer == null) {
+        widget.customersViewModel.saveCustomers(
+          nameController.text,
+          phoneController.text,
+          emailController.text,
+        );
+      } else {
+        Customers clienteEditado = Customers(
+          id: widget.customer!.id,
+          nome: nameController.text,
+          telefone: phoneController.text,
+          email: emailController.text,
+        );
+        widget.customersViewModel.editCustomers(clienteEditado);
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Cliente salvo com sucesso!',
+            widget.customer == null ? 'Cliente salvo com sucesso!' : 'Cliente atualizado com sucesso!',
             textAlign: TextAlign.center,
           ),
           backgroundColor: Color(0xFF66BB6A),
@@ -48,8 +72,9 @@ class _CustomersRegisterState extends State<CustomersRegister> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
-          'CADASTRO CLIENTE',
+        title: Text(
+          // COMENTÁRIO: Título dinâmico
+          widget.customer == null ? 'CADASTRO CLIENTE' : 'EDITAR CLIENTE',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),

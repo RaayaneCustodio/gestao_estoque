@@ -209,6 +209,35 @@ class _SuppliersScreenState extends State<SuppliersScreen> {
                         PopupMenuItem(
                           child: const ListTile(
                             contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.edit, color: Colors.blue),
+                            title: Text('Editar'),
+                          ),
+                          onTap: () {
+                            Future.delayed(const Duration(milliseconds: 10), () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height * 0.70,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: SuppliersRegister(
+                                        suppliersViewmodel: context.read(),
+                                        suppliers: supplier,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
+                          child: const ListTile(
+                            contentPadding: EdgeInsets.zero,
                             leading: Icon(Icons.delete, color: Colors.red),
                             title: Text('Remover'),
                           ),

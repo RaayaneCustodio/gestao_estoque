@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gestao_estoque/models/products.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
@@ -6,10 +7,13 @@ import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 class AddProductScreen extends StatefulWidget {
   final ProductsViewModel productsViewModel;
   final SuppliersViewmodel suppliersViewModel;
+  final Product? product;
+
   const AddProductScreen({
     super.key,
     required this.productsViewModel,
     required this.suppliersViewModel,
+    this.product,
   });
 
   @override
@@ -32,6 +36,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.product != null) {
+      _nomeController.text = widget.product!.nomeProduto;
+      _quantidadeController.text = widget.product!.quantidade.toString();
+      _precoController.text = widget.product!.preco.toStringAsFixed(2);
+      _selectedSupplier = widget.suppliersViewModel.suppliers
+          .where((s) => s.id == widget.product!.supplierId)
+          .firstOrNull;
+    }
+  }
+
   void _save() {
     if (_formKey.currentState!.validate()) {
       final String name = _nomeController.text;
@@ -39,14 +56,26 @@ class _AddProductScreenState extends State<AddProductScreen> {
       final double price =
           double.tryParse(_precoController.text.replaceAll(',', '.')) ?? 0.0;
 
-      widget.productsViewModel.saveProduct(name, quantity, price, _selectedSupplier?.id);
+      if (widget.product == null) {
+        widget.productsViewModel.saveProduct(name, quantity, price, _selectedSupplier?.id);
+      } else {
+        Product produtoEditado = Product(
+          id: widget.product!.id,
+          nomeProduto: name,
+          quantidade: quantity,
+          preco: price,
+          supplierId: _selectedSupplier?.id,
+        );
+        widget.productsViewModel.editProduct(produtoEditado);
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
+        SnackBar(
           content: Text(
-            'Produto salvo com sucesso!',
+            widget.product == null ? 'Produto salvo com sucesso!' : 'Produto atualizado com sucesso!',
             textAlign: TextAlign.center,
           ),
-          backgroundColor: Color(0xFF66BB6A),
+          backgroundColor: const Color(0xFF66BB6A),
         ),
       );
       Navigator.pop(context);
@@ -57,9 +86,9 @@ class _AddProductScreenState extends State<AddProductScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'CADASTRO PRODUTO',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          widget.product == null ? 'CADASTRO PRODUTO' : 'EDITAR PRODUTO',
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: const Color(0xFF4D9C89),

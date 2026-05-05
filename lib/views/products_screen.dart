@@ -198,6 +198,36 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       icon: const Icon(Icons.more_vert),
                       itemBuilder: (context) => [
                         PopupMenuItem(
+                          child: const ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.edit, color: Colors.blue),
+                            title: Text('Editar'),
+                          ),
+                          onTap: () {
+                            Future.delayed(const Duration(milliseconds: 10), () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: SizedBox(
+                                    height: MediaQuery.of(context).size.height * 0.70,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(16),
+                                      child: AddProductScreen(
+                                        productsViewModel: context.read(),
+                                        suppliersViewModel: context.read(),
+                                        product: product,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.delete, color: Colors.red),

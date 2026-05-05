@@ -55,7 +55,7 @@ class _SaleScreenState extends State<SaleScreen> {
         quantidade,
       );
 
-      // Atualiza o estoque exibido na UI após a saída
+      
       widget.productsViewModel.load();
 
       if (sucesso) {
