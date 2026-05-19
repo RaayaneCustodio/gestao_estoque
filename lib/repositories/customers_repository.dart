@@ -1,43 +1,54 @@
-import 'dart:collection';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:gestao_estoque/models/customers.dart';
 
 class CustomersRepository {
-  final List<Customers> _customersList = [];
+  final PocketBase pb = PocketBase('http://127.0.0.1:8090');
 
-  int getNextId() {
-    if (_customersList.isEmpty) return 1;
-    final maxId = _customersList.map((e) => e.id).reduce((a, b) => a > b ? a : b);
-    return maxId + 1;
-  }
-
-  UnmodifiableListView<Customers> get customers =>
-      UnmodifiableListView(_customersList);
-
-  void addCustomers(String nome, String telefone, String email) {
-    final newCustomers = Customers(
-      id: getNextId(),
-      nome: nome,
-      telefone: telefone,
-      email: email,
-    );
-    _customersList.add(newCustomers);
-  }
+  List<Customers> _cachedCustomers = [];
+  List<Customers> get customers => List<Customers>.unmodifiable(_cachedCustomers);
 
   Future<List<Customers>> loadCustomers() async {
-    await Future.delayed(const Duration(seconds: 1));
-    return customers;
+    try {
+      final records = await pb.collection('customers').getFullList();
+      _cachedCustomers = records.map((record) => Customers.fromJson(record.toJson())).toList();
+      return _cachedCustomers;
+    } catch (e) {
+      print("Erro ao carregar clientes do PocketBase: $e");
+      return [];
+    }
   }
 
-  void removeCustomers(int id) {
-    _customersList.removeWhere((customers) => customers.id == id);
+  Future<void> addCustomers(String nome, String telefone, String email) async {
+    try {
+      final body = {
+        'nome': nome,
+        'telefone': telefone,
+        'email': email,
+      };
+      await pb.collection('customers').create(body: body);
+    } catch (e) {
+      print("Erro ao adicionar cliente no PocketBase: $e");
+    }
   }
 
-  void updateCustomers(int id, String newNome, String newTelefone, String newEmail) {
-    final index = _customersList.indexWhere((customers) => customers.id == id);
-    if (index != -1) {
-      _customersList[index].nome = newNome;
-      _customersList[index].telefone = newTelefone;
-      _customersList[index].email = newEmail;
+  Future<void> removeCustomers(String id) async {
+    try {
+      await pb.collection('customers').delete(id);
+    } catch (e) {
+      print("Erro ao remover cliente no PocketBase: $e");
+    }
+  }
+
+  Future<void> updateCustomers(String id, String newNome, String newTelefone, String newEmail) async {
+    try {
+      final body = {
+        'nome': newNome,
+        'telefone': newTelefone,
+        'email': newEmail,
+      };
+      await pb.collection('customers').update(id, body: body);
+    } catch (e) {
+      print("Erro ao atualizar cliente no PocketBase: $e");
     }
   }
 }
