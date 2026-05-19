@@ -1,56 +1,73 @@
-import 'dart:collection';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:gestao_estoque/models/products.dart';
 
 class ProductsRepository {
-  final List<Product> _productsList = [];
 
- 
-  int getNextId() {
-    if (_productsList.isEmpty) return 1;
+  final PocketBase pb = PocketBase('http://127.0.0.1:8090');
 
-    final maxId = _productsList
-        .map((e) => e.id)
-        .reduce((a, b) => a > b ? a : b);
+  List<Product> _cachedProducts = [];
 
-    return maxId + 1;
-  }
 
-  
-  UnmodifiableListView<Product> get products =>
-      UnmodifiableListView(_productsList);
-
- 
-  void addProduct(String name, int quantity, double price, int? supplierId) {
-    final newProduct = Product(
-      id: getNextId(),
-      nomeProduto: name,
-      quantidade: quantity,
-      preco: price,
-      supplierId: supplierId,
-    );
-
-    _productsList.add(newProduct);
-  }
+  List<Product> get products => List<Product>.unmodifiable(_cachedProducts);
 
 
   Future<List<Product>> loadProducts() async {
-    await Future.delayed(const Duration(seconds: 1));
-    return products;
+    try {
+      final records = await pb.collection('products').getFullList();
+      
+
+      _cachedProducts = records.map((record) => Product.fromJson(record.toJson())).toList();
+      return _cachedProducts;
+    } catch (e) {
+      print("Erro ao carregar produtos do PocketBase: $e");
+      return [];
+    }
   }
 
 
-  void removeProduct(int id) {
-    _productsList.removeWhere((product) => product.id == id);
+  Future<void> addProduct(String name, int quantity, double price, String? supplierId) async {
+    try {
+      final body = {
+        'nomeProduto': name,
+        'quantidade': quantity,
+        'preco': price,
+        'supplierId': supplierId, 
+      };
+
+      await pb.collection('products').create(body: body);
+    } catch (e) {
+      print("Erro ao adicionar produto no PocketBase: $e");
+    }
   }
 
 
-  void updateProduct(int id, String newName, int newQuantity, double newPrice, int? newSupplierId) {
-    final index = _productsList.indexWhere((product) => product.id == id);
-    if (index != -1) {
-      _productsList[index].nomeProduto = newName;
-      _productsList[index].quantidade = newQuantity;
-      _productsList[index].preco = newPrice;
-      _productsList[index].supplierId = newSupplierId;
+  Future<void> removeProduct(String id) async {
+    try {
+      await pb.collection('products').delete(id);
+    } catch (e) {
+      print("Erro ao remover produto no PocketBase: $e");
+    }
+  }
+
+
+  Future<void> updateProduct(
+    String id, 
+    String newName, 
+    int newQuantity, 
+    double newPrice, 
+    String? newSupplierId,
+  ) async {
+    try {
+      final body = {
+        'nomeProduto': newName,
+        'quantidade': newQuantity,
+        'preco': newPrice,
+        'supplierId': newSupplierId,
+      };
+
+      await pb.collection('products').update(id, body: body);
+    } catch (e) {
+      print("Erro ao atualizar produto no PocketBase: $e");
     }
   }
 }
