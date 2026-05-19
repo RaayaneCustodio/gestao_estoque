@@ -19,8 +19,8 @@ class Product {
       id: json['id'] ?? '',
       nomeProduto: json['nomeProduto'] ?? '',
       quantidade: (json['quantidade'] ?? 0) as int, 
-      preco: (json['preco'] ?? 0.0).toDouble(), // Garante que vire double sem quebrar
-      supplierId: json['supplierId'], // Pode vir nulo se não houver fornecedor
+      preco: (json['preco'] ?? 0.0).toDouble(), 
+      supplierId: json['supplierId'], 
     );
   }
 
