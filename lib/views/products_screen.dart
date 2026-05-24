@@ -25,7 +25,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   String searchTerm = "";
   List<Product> selected = [];
 
-  // Função para limpar seleção
+
   void clearSelected() {
     setState(() {
       selected = [];
@@ -54,7 +54,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       ),
     );
   }
-  // AppBar Dinâmica
+
   PreferredSizeWidget appBarDinamica() {
     if (selected.isEmpty) {
       return AppBar(

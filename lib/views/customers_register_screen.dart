@@ -73,7 +73,6 @@ class _CustomersRegisterState extends State<CustomersRegister> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          // COMENTÁRIO: Título dinâmico
           widget.customer == null ? 'CADASTRO CLIENTE' : 'EDITAR CLIENTE',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
