@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/app/routes.dart';
-import 'package:gestao_estoque/repositories/suppliers_repository.dart';
-import 'package:gestao_estoque/repositories/products_repository.dart';
 import 'package:gestao_estoque/repositories/customers_repository.dart';
+import 'package:gestao_estoque/repositories/products_repository.dart';
 import 'package:gestao_estoque/repositories/sale_repository.dart';
-import 'package:provider/provider.dart';
-import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
-import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/repositories/suppliers_repository.dart';
 import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/sale_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:gestao_estoque/widgets/theme.dart';
+import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
   final SuppliersRepository suppliersRepository;
   final ProductsRepository productsRepository;
   final CustomersRepository customersRepository;
   final SaleRepository saleRepository;
+
   const MyApp({
     super.key,
     required this.suppliersRepository,
@@ -34,21 +35,21 @@ class MyApp extends StatelessWidget {
         Provider.value(value: saleRepository),
         ChangeNotifierProvider<SuppliersViewmodel>(
           create: (context) =>
-              SuppliersViewmodel(suppliersRepository: context.read()),
+              SuppliersViewmodel(suppliersRepository: context.read())..load(),
         ),
         ChangeNotifierProvider<ProductsViewModel>(
           create: (context) =>
-              ProductsViewModel(productsRepository: context.read()),
+              ProductsViewModel(productsRepository: context.read())..load(),
         ),
         ChangeNotifierProvider<CustomersViewModel>(
           create: (context) =>
-              CustomersViewModel(customersRepository: context.read()),
+              CustomersViewModel(customersRepository: context.read())..load(),
         ),
         ChangeNotifierProvider<SaleViewModel>(
           create: (context) => SaleViewModel(
             saleRepository: context.read(),
             productsRepository: context.read(),
-          ),
+          )..load(),
         ),
       ],
       child: ValueListenableBuilder(
@@ -60,7 +61,7 @@ class MyApp extends StatelessWidget {
             theme: lightTheme.copyWith(
               scaffoldBackgroundColor: Colors.white,
             ),
-            darkTheme: darkTheme, 
+            darkTheme: darkTheme,
             themeMode: theme,
             routerConfig: routes,
           );

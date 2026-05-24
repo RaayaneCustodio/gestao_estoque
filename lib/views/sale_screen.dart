@@ -55,7 +55,6 @@ class _SaleScreenState extends State<SaleScreen> {
         quantidade,
       );
 
-      
       widget.productsViewModel.load();
 
       if (sucesso) {

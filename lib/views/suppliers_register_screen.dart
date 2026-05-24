@@ -48,7 +48,7 @@ class _SuppliersRegisterState extends State<SuppliersRegister> {
           emailController.text,
         );
       } else {
-        Suppliers fornecedorEditado = Suppliers(
+        final fornecedorEditado = Suppliers(
           id: widget.suppliers!.id,
           nome: nameController.text,
           telefone: phoneController.text,

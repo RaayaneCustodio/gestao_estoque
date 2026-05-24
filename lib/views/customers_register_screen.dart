@@ -45,7 +45,7 @@ class _CustomersRegisterState extends State<CustomersRegister> {
           emailController.text,
         );
       } else {
-        Customers clienteEditado = Customers(
+        final clienteEditado = Customers(
           id: widget.customer!.id,
           nome: nameController.text,
           telefone: phoneController.text,

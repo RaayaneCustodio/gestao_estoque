@@ -10,14 +10,16 @@ class SuppliersViewmodel extends ChangeNotifier {
 
   SuppliersViewmodel({required this.suppliersRepository});
 
-  void load() async {
+  void load() {
     isLoading = true;
     feedback = '';
     notifyListeners();
 
-    suppliers = await suppliersRepository.loadSupplier();
-    isLoading = false;
-    notifyListeners();
+    suppliersRepository.loadSuppliers().then((list) {
+      suppliers = list;
+      isLoading = false;
+      notifyListeners();
+    });
   }
 
   void saveSuppliers(
@@ -36,12 +38,12 @@ class SuppliersViewmodel extends ChangeNotifier {
   }
 
   void removeSupplier(Suppliers supplier) {
-    suppliersRepository.removeSupplier(supplier.id);
+    suppliersRepository.removeSuppliers(supplier.id);
     load();
   }
 
   void editSupplier(Suppliers supplier) {
-    suppliersRepository.updateSupplier(
+    suppliersRepository.updateSuppliers(
       supplier.id,
       supplier.nome,
       supplier.telefone,

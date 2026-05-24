@@ -18,34 +18,52 @@ Sistema desenvolvido em Flutter para gerenciamento de estoque, permitindo o cont
 ## 🛠️ Tecnologias utilizadas
 - Flutter
 - Dart
+- PocketBase (backend)
 
 ## ▶️ Como executar o projeto
 
-1. Clone o repositório:
-```bash
-git clone <https://github.com/RaayaneCustodio/gestao_estoque.git>
+### 1. Backend (PocketBase)
 
-2. Acesse a pasta do projeto:
+Veja o guia completo em [backend/README.md](backend/README.md).
+
+Resumo:
+
+1. Baixe o `pocketbase.exe` em [pocketbase.io/docs](https://pocketbase.io/docs/) e coloque na pasta `backend/`
+2. Inicie o servidor:
+
+```powershell
+cd backend
+.\pocketbase.exe serve
+```
+
+3. No painel admin (`http://127.0.0.1:8090/_/`), deixe as regras de API das coleções em branco (acesso público em desenvolvimento)
+
+### 2. App Flutter
+
+Em **outro terminal**, na raiz do projeto:
+
 ```bash
+git clone https://github.com/RaayaneCustodio/gestao_estoque.git
 cd gestao_estoque
-
-3. Instale as dependências:
-```bash
 flutter pub get
+flutter run -d windows
+```
 
-4. Execute o projeto:
-```bash
-flutter run
+O app conecta em `http://127.0.0.1:8090` (configurável em `lib/services/api_config.dart`). No celular via USB, use `adb reverse tcp:8090 tcp:8090`.
 
 ## 📂 Estrutura do projeto
 lib/
  ├── app/
- ├── controllers/
+ ├── services/      # URL e cliente PocketBase
  ├── models/
- ├── repositories/
+ ├── repositories/  # CRUD no banco
+ ├── viewsmodel/
  ├── views/
  ├── widgets/
  └── main.dart
+backend/
+ ├── pb_migrations/ # schema das coleções
+ └── README.md
 
 ##📄 Licença
 Este projeto é apenas para fins acadêmicos.

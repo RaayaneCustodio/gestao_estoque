@@ -57,9 +57,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
           double.tryParse(_precoController.text.replaceAll(',', '.')) ?? 0.0;
 
       if (widget.product == null) {
-        widget.productsViewModel.saveProduct(name, quantity, price, _selectedSupplier?.id);
+        widget.productsViewModel.saveProduct(
+          name,
+          quantity,
+          price,
+          _selectedSupplier?.id,
+        );
       } else {
-        Product produtoEditado = Product(
+        final produtoEditado = Product(
           id: widget.product!.id,
           nomeProduto: name,
           quantidade: quantity,

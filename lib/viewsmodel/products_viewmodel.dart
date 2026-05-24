@@ -10,48 +10,41 @@ class ProductsViewModel extends ChangeNotifier {
 
   ProductsViewModel({required this.productsRepository});
 
- 
-  void load() async {
+  void load() {
     isLoading = true;
     feedback = '';
     notifyListeners();
 
-    products = await productsRepository.loadProducts();
-    isLoading = false;
-    notifyListeners();
+    productsRepository.loadProducts().then((list) {
+      products = list;
+      isLoading = false;
+      notifyListeners();
+    });
   }
-
 
   void saveProduct(
     String name,
     int quantity,
     double price,
-    int? supplierId
+    String? supplierId,
   ) {
-    productsRepository.addProduct(
-      name,
-      quantity,
-      price,
-      supplierId
-    );
+    productsRepository.addProduct(name, quantity, price, supplierId);
     feedback = '$name foi salvo!';
     notifyListeners();
-    load(); 
+    load();
   }
-
 
   void removeProduct(Product product) {
     productsRepository.removeProduct(product.id);
     load();
   }
 
-
   void editProduct(Product product) {
     productsRepository.updateProduct(
       product.id,
       product.nomeProduto,
       product.quantidade,
-      product.preco.toDouble(),
+      product.preco,
       product.supplierId,
     );
     load();

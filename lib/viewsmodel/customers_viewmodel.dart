@@ -10,14 +10,16 @@ class CustomersViewModel extends ChangeNotifier {
 
   CustomersViewModel({required this.customersRepository});
 
-  void load() async {
+  void load() {
     isLoading = true;
     feedback = '';
     notifyListeners();
 
-    customers = await customersRepository.loadCustomers();
-    isLoading = false;
-    notifyListeners();
+    customersRepository.loadCustomers().then((list) {
+      customers = list;
+      isLoading = false;
+      notifyListeners();
+    });
   }
 
   void saveCustomers(String nome, String telefone, String email) {

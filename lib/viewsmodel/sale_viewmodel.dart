@@ -16,20 +16,28 @@ class SaleViewModel extends ChangeNotifier {
     required this.productsRepository,
   });
 
-  void load() async {
+  void load() {
     isLoading = true;
     feedback = '';
     notifyListeners();
 
-    sales = await saleRepository.loadSales();
-    isLoading = false;
-    notifyListeners();
+    saleRepository.loadSales().then((list) {
+      sales = list;
+      isLoading = false;
+      notifyListeners();
+    });
   }
 
-  bool registrarSaida(int customerId, int productId, int quantidade) {
-    final product = productsRepository.products.firstWhere(
-      (p) => p.id == productId,
-    );
+  bool registrarSaida(String customerId, String productId, int quantidade) {
+    final product = productsRepository.products
+        .where((p) => p.id == productId)
+        .firstOrNull;
+
+    if (product == null) {
+      feedback = 'Produto não encontrado.';
+      notifyListeners();
+      return false;
+    }
 
     if (product.quantidade < quantidade) {
       feedback = 'Estoque insuficiente!';
@@ -58,7 +66,7 @@ class SaleViewModel extends ChangeNotifier {
     return true;
   }
 
-  List<Sale> vendasDoCliente(int customerId) {
-    return saleRepository.salesByCustomer(customerId);
+  List<Sale> vendasDoCliente(String customerId) {
+    return sales.where((s) => s.customerId == customerId).toList();
   }
 }
