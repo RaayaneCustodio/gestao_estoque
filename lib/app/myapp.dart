@@ -9,9 +9,12 @@ import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/sale_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:gestao_estoque/widgets/theme.dart';
+import 'package:gestao_estoque/viewsmodel/auth_viewmodel.dart';
+import 'package:gestao_estoque/repositories/auth_repository.dart';
 import 'package:provider/provider.dart';
 
 class MyApp extends StatelessWidget {
+  final AuthRepository authRepository;
   final SuppliersRepository suppliersRepository;
   final ProductsRepository productsRepository;
   final CustomersRepository customersRepository;
@@ -19,6 +22,7 @@ class MyApp extends StatelessWidget {
 
   const MyApp({
     super.key,
+    required this.authRepository,
     required this.suppliersRepository,
     required this.productsRepository,
     required this.customersRepository,
@@ -29,10 +33,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider.value(value: authRepository),
         Provider.value(value: suppliersRepository),
         Provider.value(value: productsRepository),
         Provider.value(value: customersRepository),
         Provider.value(value: saleRepository),
+        ChangeNotifierProvider<AuthViewModel>(
+          create: (context) => AuthViewModel(authRepository: context.read()),
+        ),
         ChangeNotifierProvider<SuppliersViewmodel>(
           create: (context) =>
               SuppliersViewmodel(suppliersRepository: context.read())..load(),

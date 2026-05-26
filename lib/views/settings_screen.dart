@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/views/add_product_screen.dart';
 import 'package:gestao_estoque/views/sale_screen.dart';
 import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/auth_viewmodel.dart';
+import 'package:go_router/go_router.dart';
+import 'package:gestao_estoque/app/routes.dart';
 import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/sale_viewmodel.dart';
 import 'package:gestao_estoque/widgets/simple_appbar.dart';
@@ -34,18 +37,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 child: ListTile(
                   title: Text(
-                    'Perfil',
-                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500),
+                    'Sair da Conta',
+                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.red),
                   ),
-                  leading: Icon(Icons.people_outline),
-                  trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                  leading: Icon(Icons.logout, color: Colors.red),
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Ainda em desenvolvimento!'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
+                    context.read<AuthViewModel>().logout();
+                    context.go(Routes.login);
                   },
                 ),
               ),

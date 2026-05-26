@@ -11,9 +11,10 @@ import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gestao_estoque/views/dashboard_screen.dart';
+import 'package:gestao_estoque/views/login_screen.dart';
+import 'package:gestao_estoque/viewsmodel/auth_viewmodel.dart';
+import 'package:gestao_estoque/services/pocketbase_client.dart';
 import 'package:provider/provider.dart';
-
-
 class Routes {
   static const homePageScreen = '/home-page-screen';
   static const dashboard = '/dashboard';
@@ -24,11 +25,29 @@ class Routes {
   static const customers = '/customers';
   static const customersRegister = '/customers-register';
   static const sale = '/sale';
+  static const login = '/login';
 }
 
 final routes = GoRouter(
-  initialLocation: Routes.homePageScreen,
+  initialLocation: pocketBaseClient.authStore.isValid ? Routes.homePageScreen : Routes.login,
+  redirect: (context, state) {
+    final isAuthenticated = pocketBaseClient.authStore.isValid;
+    final isGoingToLogin = state.matchedLocation == Routes.login;
+
+    if (!isAuthenticated && !isGoingToLogin) {
+      return Routes.login;
+    }
+    if (isAuthenticated && isGoingToLogin) {
+      return Routes.homePageScreen;
+    }
+    return null;
+  },
   routes: [
+    GoRoute(
+      path: Routes.login,
+      name: Routes.login,
+      builder: (context, state) => LoginScreen(authViewModel: context.read()),
+    ),
     GoRoute(
       path: Routes.homePageScreen,
       name: Routes.homePageScreen,
