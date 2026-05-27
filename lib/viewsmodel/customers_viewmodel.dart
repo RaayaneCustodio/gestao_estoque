@@ -23,24 +23,29 @@ class CustomersViewModel extends ChangeNotifier {
   }
 
   void saveCustomers(String nome, String telefone, String email) {
-    customersRepository.addCustomers(nome, telefone, email);
-    feedback = '$nome foi salvo!';
-    notifyListeners();
-    load();
+    customersRepository.addCustomers(nome, telefone, email).then((_) {
+      feedback = '$nome foi salvo!';
+      notifyListeners();
+      load();
+    });
   }
 
-  void removeCustomers(Customers customers) {
-    customersRepository.removeCustomers(customers.id);
-    load();
+  void removeCustomers(Customers customer) {
+    customersRepository.removeCustomers(customer.id).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 
-  void editCustomers(Customers customers) {
+  void editCustomers(Customers customer) {
     customersRepository.updateCustomers(
-      customers.id,
-      customers.nome,
-      customers.telefone,
-      customers.email,
-    );
-    load();
+      customer.id,
+      customer.nome,
+      customer.telefone,
+      customer.email,
+    ).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 }

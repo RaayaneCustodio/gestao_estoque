@@ -28,15 +28,18 @@ class ProductsViewModel extends ChangeNotifier {
     double price,
     String? supplierId,
   ) {
-    productsRepository.addProduct(name, quantity, price, supplierId);
-    feedback = '$name foi salvo!';
-    notifyListeners();
-    load();
+    productsRepository.addProduct(name, quantity, price, supplierId).then((_) {
+      feedback = '$name foi salvo!';
+      notifyListeners();
+      load();
+    });
   }
 
   void removeProduct(Product product) {
-    productsRepository.removeProduct(product.id);
-    load();
+    productsRepository.removeProduct(product.id).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 
   void editProduct(Product product) {
@@ -46,7 +49,9 @@ class ProductsViewModel extends ChangeNotifier {
       product.quantidade,
       product.preco,
       product.supplierId,
-    );
-    load();
+    ).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 }

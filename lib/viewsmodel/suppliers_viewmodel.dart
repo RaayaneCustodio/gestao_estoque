@@ -31,15 +31,18 @@ class SuppliersViewmodel extends ChangeNotifier {
       supplierName,
       supplierPhone,
       supplierEmail,
-    );
-    feedback = '$supplierName foi salvo!';
-    notifyListeners();
-    load();
+    ).then((_) {
+      feedback = '$supplierName foi salvo!';
+      notifyListeners();
+      load();
+    });
   }
 
   void removeSupplier(Suppliers supplier) {
-    suppliersRepository.removeSuppliers(supplier.id);
-    load();
+    suppliersRepository.removeSuppliers(supplier.id).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 
   void editSupplier(Suppliers supplier) {
@@ -48,7 +51,9 @@ class SuppliersViewmodel extends ChangeNotifier {
       supplier.nome,
       supplier.telefone,
       supplier.email,
-    );
-    load();
+    ).then((_) {
+      notifyListeners();
+      load();
+    });
   }
 }

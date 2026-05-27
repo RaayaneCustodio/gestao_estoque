@@ -5,9 +5,7 @@ import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class SuppliersScreen extends StatefulWidget {
-  final SuppliersViewmodel suppliersViewmodel;
-
-  const SuppliersScreen({super.key, required this.suppliersViewmodel});
+  const SuppliersScreen({super.key});
 
   @override
   State<SuppliersScreen> createState() => _SuppliersScreenState();

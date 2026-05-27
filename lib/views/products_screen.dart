@@ -6,13 +6,9 @@ import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatefulWidget {
-  final ProductsViewModel productsViewmodel;
-  final SuppliersViewmodel suppliersViewmodel;
 
   const ProductsScreen({
     super.key,
-    required this.productsViewmodel,
-    required this.suppliersViewmodel,
   });
 
   @override
@@ -255,7 +251,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             MaterialPageRoute(
               builder: (_) => AddProductScreen(
                 productsViewModel: context.read(),
-                suppliersViewModel: widget.suppliersViewmodel,
+                suppliersViewModel: context.read() ,
               ),
             ),
           );
