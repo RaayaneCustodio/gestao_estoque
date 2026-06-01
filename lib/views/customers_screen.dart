@@ -5,9 +5,7 @@ import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class CustomersScreen extends StatefulWidget {
-  final CustomersViewModel customersViewModel;
-
-  const CustomersScreen({super.key, required this.customersViewModel});
+  const CustomersScreen({super.key});
 
   @override
   State<CustomersScreen> createState() => _CustomersScreenState();

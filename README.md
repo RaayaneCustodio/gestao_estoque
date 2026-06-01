@@ -11,9 +11,12 @@ Sistema desenvolvido em Flutter para gerenciamento de estoque, permitindo o cont
 - Listagem de Produtos
 - Cadastro de fornecedores
 - Listagem de fornecedores
+- Cadastro de Clientes
+- Listagem de Clientes
 - Organização de dados de estoque
 - Interface simples e intuitiva
-- COnfigurações de tema Dark e Light 
+- COnfigurações de tema Dark e Light
+- Entrada e Saida de produtos ainda em desenvolvimento
 
 ## 🛠️ Tecnologias utilizadas
 - Flutter

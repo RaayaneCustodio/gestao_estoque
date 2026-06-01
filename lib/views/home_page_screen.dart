@@ -39,11 +39,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
         children: [
           DashboardScreen(),
           ProductsScreen(
-            productsViewmodel: context.read(),
-            suppliersViewmodel: context.read<SuppliersViewmodel>(),
           ),
-          SuppliersScreen(suppliersViewmodel: context.read()),
-          CustomersScreen(customersViewModel: context.read<CustomersViewModel>()),
+          SuppliersScreen(),
+          CustomersScreen(),
           SettingsScreen(),
         ],
         onPageChanged: setCurrentPage,

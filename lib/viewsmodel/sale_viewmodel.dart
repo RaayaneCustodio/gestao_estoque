@@ -51,6 +51,7 @@ class SaleViewModel extends ChangeNotifier {
       product.quantidade - quantidade,
       product.preco,
       product.supplierId,
+      
     );
 
     saleRepository.addSale(
@@ -68,5 +69,6 @@ class SaleViewModel extends ChangeNotifier {
 
   List<Sale> vendasDoCliente(String customerId) {
     return sales.where((s) => s.customerId == customerId).toList();
+    notifyListeners();
   }
 }
