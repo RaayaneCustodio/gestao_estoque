@@ -12,7 +12,6 @@ import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gestao_estoque/views/dashboard_screen.dart';
 import 'package:gestao_estoque/views/login_screen.dart';
-import 'package:gestao_estoque/viewsmodel/auth_viewmodel.dart';
 import 'package:gestao_estoque/services/pocketbase_client.dart';
 import 'package:provider/provider.dart';
 class Routes {

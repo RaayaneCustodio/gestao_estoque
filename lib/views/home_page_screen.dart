@@ -4,9 +4,6 @@ import 'package:gestao_estoque/views/settings_screen.dart';
 import 'package:gestao_estoque/views/suppliers_screen.dart';
 import 'package:gestao_estoque/views/products_screen.dart';
 import 'package:gestao_estoque/views/customers_screen.dart';
-import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
-import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});

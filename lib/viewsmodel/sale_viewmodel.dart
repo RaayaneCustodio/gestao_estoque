@@ -28,7 +28,11 @@ class SaleViewModel extends ChangeNotifier {
     });
   }
 
-  bool registrarSaida(String customerId, String productId, int quantidade) {
+  Future<bool> registrarSaida(
+    String customerId,
+    String productId,
+    int quantidade,
+  ) async {
     final product = productsRepository.products
         .where((p) => p.id == productId)
         .firstOrNull;
@@ -45,21 +49,26 @@ class SaleViewModel extends ChangeNotifier {
       return false;
     }
 
-    productsRepository.updateProduct(
-      product.id,
-      product.nomeProduto,
-      product.quantidade - quantidade,
-      product.preco,
-      product.supplierId,
-      
-    );
+    try {
+      await productsRepository.updateProduct(
+        product.id,
+        product.nomeProduto,
+        product.quantidade - quantidade,
+        product.preco,
+        product.supplierId,
+      );
 
-    saleRepository.addSale(
-      customerId,
-      productId,
-      quantidade,
-      product.preco,
-    );
+      await saleRepository.addSale(
+        customerId,
+        productId,
+        quantidade,
+        product.preco,
+      );
+    } catch (e) {
+      feedback = 'Erro ao registrar: $e';
+      notifyListeners();
+      return false;
+    }
 
     feedback = 'Saída registrada com sucesso!';
     notifyListeners();
@@ -68,7 +77,7 @@ class SaleViewModel extends ChangeNotifier {
   }
 
   List<Sale> vendasDoCliente(String customerId) {
-    return sales.where((s) => s.customerId == customerId).toList();
     notifyListeners();
+    return sales.where((s) => s.customerId == customerId).toList();
   }
 }

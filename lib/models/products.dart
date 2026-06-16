@@ -4,6 +4,7 @@ class Product {
   int quantidade;
   double preco;
   String? supplierId;
+  String? imagemProduto;
 
   Product({
     required this.id,
@@ -11,6 +12,7 @@ class Product {
     required this.quantidade,
     required this.preco,
     this.supplierId,
+    this.imagemProduto,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class Product {
       quantidade: (json['quantidade'] as num?)?.toInt() ?? 0,
       preco: (json['preco'] as num?)?.toDouble() ?? 0.0,
       supplierId: _relationId(json['supplierId']),
+      imagemProduto: json['imagemProduto'] as String?,
     );
   }
 
@@ -36,6 +39,16 @@ class Product {
       'quantidade': quantidade,
       'preco': preco,
       'supplierId': supplierId,
+      'imagemProduto': imagemProduto,
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Product && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
 }

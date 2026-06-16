@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/products.dart';
 import 'package:gestao_estoque/views/add_product_screen.dart';
+import 'package:gestao_estoque/views/stock_entry_dialog.dart';
 import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/viewsmodel/customers_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ProductsScreen extends StatefulWidget {
@@ -82,8 +84,15 @@ class _ProductsScreenState extends State<ProductsScreen> {
             onPressed: () async {
               final confirmed = await _showDeleteDialog();
               if (confirmed == true) {
+                bool hasError = false;
                 for (final product in selected) {
-                  context.read<ProductsViewModel>().removeProduct(product);
+                  final erro = await context.read<ProductsViewModel>().removeProduct(product);
+                  if (erro != null) hasError = true;
+                }
+                if (hasError && mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Alguns produtos não foram excluídos pois possuem histórico.'), backgroundColor: Colors.red),
+                  );
                 }
                 clearSelected();
               }
@@ -224,6 +233,28 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           },
                         ),
                         PopupMenuItem(
+                          child: const ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Icon(Icons.sync_alt, color: Colors.green),
+                            title: Text('Movimentar Estoque'),
+                          ),
+                          onTap: () {
+                            Future.delayed(const Duration(milliseconds: 10), () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => StockEntryDialog(
+                                  product: product,
+                                  suppliers: context.read<SuppliersViewmodel>().suppliers,
+                                  customers: context.read<CustomersViewModel>().customers,
+                                  onSuccess: () {
+                                    context.read<ProductsViewModel>().load();
+                                  },
+                                ),
+                              );
+                            });
+                          },
+                        ),
+                        PopupMenuItem(
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: const Icon(Icons.delete, color: Colors.red),
@@ -232,7 +263,12 @@ class _ProductsScreenState extends State<ProductsScreen> {
                               Navigator.pop(context);
                               final confirmed = await _showDeleteDialog();
                               if (confirmed == true) {
-                                context.read<ProductsViewModel>().removeProduct(product);
+                                final erro = await context.read<ProductsViewModel>().removeProduct(product);
+                                if (erro != null && mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(erro), backgroundColor: Colors.red),
+                                  );
+                                }
                               }
                             },
                           ),

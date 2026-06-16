@@ -27,28 +27,34 @@ class ProductsViewModel extends ChangeNotifier {
     int quantity,
     double price,
     String? supplierId,
+    {String? imagePath}
   ) {
-    productsRepository.addProduct(name, quantity, price, supplierId).then((_) {
+    productsRepository.addProduct(name, quantity, price, supplierId, imagePath: imagePath).then((_) {
       feedback = '$name foi salvo!';
       notifyListeners();
       load();
     });
   }
 
-  void removeProduct(Product product) {
-    productsRepository.removeProduct(product.id).then((_) {
+  Future<String?> removeProduct(Product product) async {
+    try {
+      await productsRepository.removeProduct(product.id);
       notifyListeners();
       load();
-    });
+      return null;
+    } catch (e) {
+      return 'O produto possui histórico de movimentação/venda e não pode ser excluído.';
+    }
   }
 
-  void editProduct(Product product) {
+  void editProduct(Product product, {String? imagePath}) {
     productsRepository.updateProduct(
       product.id,
       product.nomeProduto,
       product.quantidade,
       product.preco,
       product.supplierId,
+      imagePath: imagePath,
     ).then((_) {
       notifyListeners();
       load();

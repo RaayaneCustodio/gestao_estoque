@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/products.dart';
 import 'package:gestao_estoque/models/suppliers.dart';
 import 'package:gestao_estoque/viewsmodel/products_viewmodel.dart';
+import 'dart:io';
 import 'package:gestao_estoque/viewsmodel/suppliers_viewmodel.dart';
+import 'package:gestao_estoque/widgets/image_picker_modal.dart';
 
 class AddProductScreen extends StatefulWidget {
   final ProductsViewModel productsViewModel;
@@ -25,6 +27,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final TextEditingController _quantidadeController = TextEditingController();
   final TextEditingController _precoController = TextEditingController();
   Suppliers? _selectedSupplier;
+  String? _imagePath;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -62,6 +65,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           quantity,
           price,
           _selectedSupplier?.id,
+          imagePath: _imagePath,
         );
       } else {
         final produtoEditado = Product(
@@ -71,7 +75,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
           preco: price,
           supplierId: _selectedSupplier?.id,
         );
-        widget.productsViewModel.editProduct(produtoEditado);
+        widget.productsViewModel.editProduct(produtoEditado, imagePath: _imagePath);
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +118,26 @@ class _AddProductScreenState extends State<AddProductScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () async {
+                      final path = await ImagePickerModal.show(context);
+                      if (path != null) {
+                        setState(() {
+                          _imagePath = path;
+                        });
+                      }
+                    },
+                    child: CircleAvatar(
+                      radius: 50,
+                      backgroundColor: const Color(0xFFD9D9D9),
+                      backgroundImage: _imagePath != null ? FileImage(File(_imagePath!)) : null,
+                      child: _imagePath == null
+                          ? const Icon(Icons.camera_alt, size: 40, color: Colors.black54)
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   const Text(
                     'Nome do Produto',
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

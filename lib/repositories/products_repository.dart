@@ -1,6 +1,7 @@
 import 'package:gestao_estoque/services/pocketbase_client.dart';
 import 'package:gestao_estoque/models/products.dart';
 import 'package:pocketbase/pocketbase.dart';
+import 'package:http/http.dart' as http;
 
 class ProductsRepository {
   ProductsRepository({PocketBase? pb}) : _pb = pb ?? pocketBaseClient;
@@ -27,15 +28,21 @@ class ProductsRepository {
     int quantity,
     double price,
     String? supplierId,
+    {String? imagePath}
   ) async {
-    await _pb.collection('products').create(
-      body: {
-        'nomeProduto': name,
-        'quantidade': quantity,
-        'preco': price,
-        if (supplierId != null) 'supplierId': supplierId,
-      },
-    );
+    final body = {
+      'nomeProduto': name,
+      'quantidade': quantity,
+      'preco': price,
+      if (supplierId != null) 'supplierId': supplierId,
+    };
+
+    List<http.MultipartFile> files = [];
+    if (imagePath != null && imagePath.isNotEmpty) {
+      files.add(await http.MultipartFile.fromPath('imagemProduto', imagePath));
+    }
+
+    await _pb.collection('products').create(body: body, files: files);
     await loadProducts();
   }
 
@@ -50,16 +57,21 @@ class ProductsRepository {
     int newQuantity,
     double newPrice,
     String? newSupplierId,
+    {String? imagePath}
   ) async {
-    await _pb.collection('products').update(
-      id,
-      body: {
-        'nomeProduto': newName,
-        'quantidade': newQuantity,
-        'preco': newPrice,
-        'supplierId': newSupplierId,
-      },
-    );
+    final body = {
+      'nomeProduto': newName,
+      'quantidade': newQuantity,
+      'preco': newPrice,
+      if (newSupplierId != null && newSupplierId.isNotEmpty) 'supplierId': newSupplierId,
+    };
+
+    List<http.MultipartFile> files = [];
+    if (imagePath != null && imagePath.isNotEmpty) {
+      files.add(await http.MultipartFile.fromPath('imagemProduto', imagePath));
+    }
+
+    await _pb.collection('products').update(id, body: body, files: files);
     await loadProducts();
   }
 }

@@ -45,11 +45,11 @@ class _SaleScreenState extends State<SaleScreen> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (_formKey.currentState!.validate()) {
       final int quantidade = int.tryParse(_quantidadeController.text) ?? 0;
 
-      final sucesso = widget.saleViewModel.registrarSaida(
+      final sucesso = await widget.saleViewModel.registrarSaida(
         _selectedCustomer!.id,
         _selectedProduct!.id,
         quantidade,

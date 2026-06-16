@@ -6,22 +6,21 @@ Projeto desenvolvido por **Brenda Amanda da Silva Garcez** e **Rayane Custódio*
 Sistema desenvolvido em Flutter para gerenciamento de estoque, permitindo o controle de fornecedores e produtos.
 
 ## 🚀 Funcionalidades
-- Dashboard Dinamica com contador
-- Cadastro de Produtos
-- Listagem de Produtos
-- Cadastro de fornecedores
-- Listagem de fornecedores
-- Cadastro de Clientes
-- Listagem de Clientes
-- Organização de dados de estoque
-- Interface simples e intuitiva
-- COnfigurações de tema Dark e Light
-- Entrada e Saida de produtos ainda em desenvolvimento
+- Dashboard Dinâmica com contador de métricas e status geral.
+- Cadastro, Listagem, Edição e Exclusão de Produtos, Clientes e Fornecedores.
+- **Gestão de Estoque Completa**: Movimentações (Entrada/Saída) com vínculo opcional de clientes/fornecedores e Vendas.
+- **Relatório de Estoque Gerencial**: Geração local e nativa de um arquivo Excel (`.xlsx`) com múltiplas abas rastreando movimentações e vendas.
+- **Recursos Nativos Integrados**:
+  - Acesso à **Câmera e Galeria** do dispositivo para anexar fotos e comprovantes.
+  - Acesso ao **File System (Sistema de Arquivos)** do Android/iOS para gravar as planilhas localmente.
+  - Abertura automática de visualizadores de planilha no dispositivo móvel.
+- Interface intuitiva com suporte nativo a Tema Claro/Escuro (Light & Dark mode).
+- Tratamento assíncrono rigoroso de erros na interface de usuário via SnackBar.
 
-## 🛠️ Tecnologias utilizadas
-- Flutter
-- Dart
-- PocketBase (backend)
+## 🛠️ Tecnologias e Padrões
+- **Flutter & Dart**: Arquitetura padrão de mercado separando Views, ViewModels (Provider) e Repositories.
+- **Consumo Direto de API Web HTTP**: Integração 100% via API REST pura usando `package:http`, com parsing JSON minucioso e tratamento robusto de exceções/status errors.
+- **PocketBase (Backend)**: Banco de dados, API e Autenticação.
 
 ## ▶️ Como executar o projeto
 
