@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gestao_estoque/models/sale.dart';
 import 'package:gestao_estoque/repositories/products_repository.dart';
 import 'package:gestao_estoque/repositories/sale_repository.dart';
+import 'package:gestao_estoque/services/estoque_service.dart';
 
 class SaleViewModel extends ChangeNotifier {
   bool isLoading = false;
@@ -50,12 +51,11 @@ class SaleViewModel extends ChangeNotifier {
     }
 
     try {
-      await productsRepository.updateProduct(
-        product.id,
-        product.nomeProduto,
-        product.quantidade - quantidade,
-        product.preco,
-        product.supplierId,
+      final estoqueService = EstoqueService();
+      await estoqueService.registrarSaida(
+        productId,
+        quantidade,
+        customerId: customerId,
       );
 
       await saleRepository.addSale(

@@ -1,61 +1,106 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:gestao_estoque/services/api_config.dart';
-import 'package:gestao_estoque/services/pocketbase_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EstoqueService {
 
-  Future<void> enviarEntradaHttp(String produtoId, int quantidade) async {
-   
+  Future<int> enviarEntradaHttp(
+    String produtoId,
+    int quantidade, {
+    String? supplierId,
+    String? imagePath,
+  }) async {
     final url = Uri.parse('${ApiConfig.baseUrl}/api/v1/processar-entrada');
 
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'produto_id': produtoId,
-          'quantidade': quantidade,
-        }),
-      );
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'produto_id': produtoId,
+        'quantidade': quantidade,
+        if (supplierId != null && supplierId.isNotEmpty)
+          'supplier_id': supplierId,
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> dadosRetornados = jsonDecode(response.body);
-        print('Sucesso: ${dadosRetornados['mensagem']}');
-      } else {
-        final Map<String, dynamic> erroRetornado = jsonDecode(response.body);
-        print('Erro do Servidor (${response.statusCode}): ${erroRetornado['mensagem']}');
-      }
-    } catch (e) {
-      print('Falha na conexão com a API: $e');
+    final Map<String, dynamic> dados = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(dados['mensagem'] ?? 'Erro ao processar entrada');
     }
+
+    final String recordId = dados['record_id'];
+    final int qtdAtual = (dados['quantidade_atual'] as num).toInt();
+
+    if (imagePath != null && imagePath.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      final pbAuthJson = prefs.getString('pb_auth');
+      String? token;
+      if (pbAuthJson != null) {
+        final decoded = jsonDecode(pbAuthJson);
+        token = decoded['token'] as String?;
+      }
+
+      final patchUrl = Uri.parse(
+        '${ApiConfig.baseUrl}/api/collections/stock_entries/records/$recordId',
+      );
+      final request = http.MultipartRequest('PATCH', patchUrl);
+      if (token != null) request.headers['Authorization'] = token;
+      request.files.add(await http.MultipartFile.fromPath('recibo', imagePath));
+      await request.send();
+    }
+
+    return qtdAtual;
   }
 
-  Future<void> registrarMovimentacao(String produtoId, int quantidade, String tipo, {String? imagePath, String? customerId, String? supplierId}) async {
-    try {
-      final body = {
-        'product_id': produtoId,
-        'quantidade': quantidade,
-        'tipo': tipo,
-        if (customerId != null && customerId.isNotEmpty) 'customer_id': customerId,
-        if (supplierId != null && supplierId.isNotEmpty) 'supplier_id': supplierId,
-      };
+  Future<int> registrarSaida(
+    String produtoId,
+    int quantidade, {
+    String? customerId,
+    String? imagePath,
+  }) async {
+    final url = Uri.parse('${ApiConfig.baseUrl}/api/v1/processar-saida');
 
-      List<http.MultipartFile> files = [];
-      if (imagePath != null && imagePath.isNotEmpty) {
-        files.add(await http.MultipartFile.fromPath('recibo', imagePath));
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'produto_id': produtoId,
+        'quantidade': quantidade,
+        if (customerId != null && customerId.isNotEmpty)
+          'customer_id': customerId,
+      }),
+    );
+
+    final Map<String, dynamic> dados = jsonDecode(response.body);
+
+    if (response.statusCode != 200) {
+      throw Exception(dados['mensagem'] ?? 'Erro ao processar saída');
+    }
+
+    final String recordId = dados['record_id'];
+    final int qtdAtual = (dados['quantidade_atual'] as num).toInt();
+
+    if (imagePath != null && imagePath.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      final pbAuthJson = prefs.getString('pb_auth');
+      String? token;
+      if (pbAuthJson != null) {
+        final decoded = jsonDecode(pbAuthJson);
+        token = decoded['token'] as String?;
       }
 
-      final record = await pocketBaseClient.collection('stock_entries').create(
-        body: body,
-        files: files,
+      final patchUrl = Uri.parse(
+        '${ApiConfig.baseUrl}/api/collections/stock_entries/records/$recordId',
       );
-      
-    } catch (e) {
-      print('Erro ao registrar movimentação no PocketBase: $e');
-      rethrow;
+      final request = http.MultipartRequest('PATCH', patchUrl);
+      if (token != null) request.headers['Authorization'] = token;
+      request.files.add(await http.MultipartFile.fromPath('recibo', imagePath));
+      await request.send();
     }
+
+    return qtdAtual;
   }
 }

@@ -28,7 +28,7 @@ class _StockEntryDialogState extends State<StockEntryDialog> {
   final TextEditingController _qtdController = TextEditingController();
   String? _imagePath;
   bool _isLoading = false;
-  String _tipoMovimentacao = 'entrada'; // 'entrada' ou 'saida'
+  String _tipoMovimentacao = 'entrada';
   Suppliers? _selectedSupplier;
   Customers? _selectedCustomer;
 
@@ -45,32 +45,64 @@ class _StockEntryDialogState extends State<StockEntryDialog> {
 
     try {
       final estoqueService = EstoqueService();
-      await estoqueService.registrarMovimentacao(
-        widget.product.id,
-        qtd,
-        _tipoMovimentacao,
-        imagePath: _imagePath,
-        customerId: _tipoMovimentacao == 'saida' ? _selectedCustomer?.id : null,
-        supplierId: _tipoMovimentacao == 'entrada' ? _selectedSupplier?.id : null,
-      );
-      
-      if (mounted) {
-        widget.onSuccess();
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Movimentação registrada com sucesso!', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green),
+
+      if (_tipoMovimentacao == 'entrada') {
+        final qtdAtual = await estoqueService.enviarEntradaHttp(
+          widget.product.id,
+          qtd,
+          supplierId: _selectedSupplier?.id,
+          imagePath: _imagePath,
         );
+
+        if (mounted) {
+          widget.onSuccess();
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Entrada registrada! Estoque atual: $qtdAtual unidades',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } else {
+        final qtdAtual = await estoqueService.registrarSaida(
+          widget.product.id,
+          qtd,
+          customerId: _selectedCustomer?.id,
+          imagePath: _imagePath,
+        );
+
+        if (mounted) {
+          widget.onSuccess();
+          Navigator.of(context).pop();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Saída registrada! Estoque atual: $qtdAtual unidades',
+                style: const TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro: $e', style: const TextStyle(color: Colors.white)), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('Erro: $e', style: const TextStyle(color: Colors.white)),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
